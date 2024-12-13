@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Noto_Sans_Thai } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const notoSansThai = Noto_Sans_Thai({ 
   subsets: ["thai"],
@@ -29,6 +30,7 @@ export default function RootLayout({
           </main>
         </div>
         <Toaster />
+        <SpeedInsights />
       </body>
     </html>
   )
