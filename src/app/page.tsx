@@ -1,4 +1,5 @@
 // src/app/page.tsx
+export const dynamic = "force-dynamic";
 import ShirtOrderForm from "@/components/ShirtOrderForm"
 import { Suspense } from "react"
 

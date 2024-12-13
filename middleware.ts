@@ -2,13 +2,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin') && 
-      !request.nextUrl.pathname.includes('/login')) {
-    const isAuthenticated = request.cookies.has('admin_authenticated')
+export async function middleware(request: NextRequest) {
+  // Only protect /admin routes
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    // Skip middleware for login page
+    if (request.nextUrl.pathname === '/admin/login') {
+      return NextResponse.next()
+    }
+
+    const authCookie = request.cookies.get('admin_authenticated')
     
-    if (!isAuthenticated) {
+    if (!authCookie?.value) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }
@@ -17,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/admin/:path*'
+  matcher: ['/admin/:path*']
 }
