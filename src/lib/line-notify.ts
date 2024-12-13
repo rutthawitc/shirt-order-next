@@ -120,12 +120,28 @@ export async function sendStatusUpdateNotification(
     return true;
   }
 
-  const statusText = status === 'delivered' ? 'จัดส่งแล้ว' : 'รอดำเนินการ';
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'รอตรวจสอบ'
+      case 'confirmed':
+        return 'ยืนยันการชำระเงิน'
+      case 'processing':
+        return 'กำลังจัดส่ง'
+      case 'completed':
+        return 'จัดส่งแล้ว'
+      case 'cancelled':
+        return 'ยกเลิก'
+      default:
+        return status
+    }
+  }
+
   const message = `
 ${env.isTestEnvironment ? '[ทดสอบ] ' : ''}📦 อัพเดทสถานะคำสั่งซื้อ
 รหัสสั่งซื้อ: ${orderId}
 ชื่อผู้สั่ง: ${name}
-สถานะ: ${statusText}
+สถานะ: ${getStatusLabel(status)}
   `.trim();
 
   try {

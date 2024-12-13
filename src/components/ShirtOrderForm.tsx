@@ -26,10 +26,10 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { SHIRT_DESIGNS, SIZES } from "@/constants/shirt-designs";
-import SizeGuideCard from "./SizeGuideCard";
-import SouvenirSizeGuideCard from "./SouvenirSizeGuideCard";
+import SizeGuideCard from "@/components/SizeGuideCard";
+import SouvenirSizeGuideCard from "@/components/SouvenirSizeGuideCard";
 import type { OrderItem, DBOrderItem, CustomerInfo } from "@/types/order";
-import ShirtDesignCard from "./ShirtDesignCard";
+import ShirtDesignCard from "@/components/ShirtDesignCard";
 import { createObjectURL, revokeObjectURL } from "@/lib/image-helpers";
 
 export default function ShirtOrderForm() {
@@ -478,6 +478,7 @@ export default function ShirtOrderForm() {
                     alt="สลิปการโอนเงิน"
                     fill
                     className="object-contain rounded shadow"
+                    sizes="(max-width: 768px) 100vw, 320px"
                   />
                 </div>
               )}
