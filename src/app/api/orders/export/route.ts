@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/app/api/orders/export/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
@@ -38,6 +39,46 @@ export async function GET() {
       'รวม': item.quantity * item.price_per_unit
     }));
 
+    // Process size summary data
+    function processSizeSummary(items: any[]) {
+      const sizeCount = new Map<string, { [key: string]: number }>();
+      const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+
+      // Initialize the map with designs and zero quantities
+      ['1', '2', '4'].forEach(design => {
+        sizeCount.set(design, Object.fromEntries(sizes.map(size => [size, 0])));
+      });
+
+      items.forEach(item => {
+        const design = item.design;
+        const size = item.size;
+        const quantity = item.quantity;
+
+        // Handle design #3 (split between designs 1 and 2)
+        if (design === '3') {
+          // Add quantity to both design 1 and 2
+          ['1', '2'].forEach(designId => {
+            if (sizeCount.has(designId) && size) {
+              const designSizes = sizeCount.get(designId)!;
+              designSizes[size] = (designSizes[size] || 0) + quantity;
+            }
+          });
+        } else if (sizeCount.has(design) && size) {
+          // Normal processing for other designs
+          const designSizes = sizeCount.get(design)!;
+          designSizes[size] = (designSizes[size] || 0) + quantity;
+        }
+      });
+
+      // Convert to array format for Excel
+      const sizeSummary = Array.from(sizeCount.entries()).map(([design, sizeData]) => ({
+        'แบบเสื้อ': getDesignName(design),
+        ...sizeData
+      }));
+
+      return sizeSummary;
+    }
+
     // Create workbook and sheets
     const wb = XLSX.utils.book_new();
 
@@ -49,11 +90,20 @@ export async function GET() {
     const wsItems = XLSX.utils.json_to_sheet(itemsForExcel);
     XLSX.utils.book_append_sheet(wb, wsItems, 'รายการสินค้า');
 
+    // Add size summary sheet
+    const sizeSummary = processSizeSummary(items);
+    const wsSizes = XLSX.utils.json_to_sheet(sizeSummary);
+    XLSX.utils.book_append_sheet(wb, wsSizes, 'ขนาดเสื้อ');
+
     // Auto-size columns
     const colWidths: { [key: string]: number } = {};
-    ['รายการออเดอร์', 'รายการสินค้า'].forEach(sheetName => {
+    ['รายการออเดอร์', 'รายการสินค้า', 'ขนาดเสื้อ'].forEach(sheetName => {
       const ws = wb.Sheets[sheetName];
-      const data = sheetName === 'รายการออเดอร์' ? ordersForExcel : itemsForExcel;
+      const data = sheetName === 'รายการออเดอร์' 
+        ? ordersForExcel 
+        : sheetName === 'รายการสินค้า'
+          ? itemsForExcel
+          : sizeSummary;
       
       // Get all keys from the first row
       const keys = Object.keys(data[0]);

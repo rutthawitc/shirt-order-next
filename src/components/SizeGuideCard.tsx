@@ -22,7 +22,9 @@ export default function SizeGuideCard() {
   return (
     <Card className="w-full mb-8">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อ Jersey</CardTitle>
+        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อ Jersey
+          <p className="text-sm text-red-500">* ขนาดเสื้อ Jersey และเสื้อที่ระลึกจะไม่เหมือนกัน</p>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

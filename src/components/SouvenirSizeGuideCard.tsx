@@ -9,7 +9,6 @@ interface DetailedSizeInfo {
 }
 
 const DETAILED_SIZES: DetailedSizeInfo[] = [
-  { code: 'XS', width: 17.3, chest: 34.6, length: 25.2 },
   { code: 'S', width: 18.5, chest: 37.0, length: 26.4 },
   { code: 'M', width: 19.7, chest: 39.4, length: 27.6 },
   { code: 'L', width: 20.8, chest: 41.7, length: 28.7 },
@@ -24,7 +23,9 @@ export default function SouvenirSizeGuideCard() {
   return (
     <Card className="w-full mb-8">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อที่ระลึก</CardTitle>
+        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อที่ระลึก
+        <p className="text-sm text-red-500">* ขนาดเสื้อ Jersey และเสื้อที่ระลึกจะไม่เหมือนกัน</p>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
