@@ -11,7 +11,11 @@ import { Loader2 } from "lucide-react";
 export default async function Home() {
   // Check order status
   try {
-    const response = await fetch("/api/orders/toggle-status");
+    // Get base URL from environment or default to localhost
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/orders/toggle-status`, {
+      cache: "no-store",
+    });
     if (!response.ok) throw new Error("Failed to fetch order status");
     const data = await response.json();
 
