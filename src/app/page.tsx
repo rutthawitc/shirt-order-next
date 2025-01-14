@@ -59,15 +59,16 @@ export default async function Home() {
         </Suspense>
       </div>
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as Error & { digest?: string };
     // Don't log redirect "errors" as they're expected behavior
-    if (!error.digest?.includes("NEXT_REDIRECT")) {
-      console.error("Error checking order status:", error);
+    if (!err.digest?.includes("NEXT_REDIRECT")) {
+      console.error("Error checking order status:", err);
     }
-    
+
     // Re-throw redirect errors
-    if (error.digest?.includes("NEXT_REDIRECT")) {
-      throw error;
+    if (err.digest?.includes("NEXT_REDIRECT")) {
+      throw err;
     }
 
     // Show error UI for other errors
