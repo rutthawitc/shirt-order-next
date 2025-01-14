@@ -13,8 +13,13 @@ export default async function Home() {
   try {
     // Get base URL from environment or default to localhost
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+    console.log("Using API URL:", baseUrl); // Add logging for debugging
+    
     const response = await fetch(`${baseUrl}/api/orders/toggle-status`, {
       cache: "no-store",
+    }).catch((fetchError) => {
+      console.error("Fetch error:", fetchError);
+      throw new Error(`Failed to connect to API: ${fetchError.message}`);
     });
 
     if (!response.ok) {
