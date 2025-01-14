@@ -1,6 +1,6 @@
 // src/app/api/orders/toggle-status/route.ts
 import { NextResponse } from 'next/server'
-import { kv } from '@vercel/kv'
+import redis from '@/lib/redis'
 
 // In-memory store for development
 let devOrdersClosed = false;
@@ -13,13 +13,8 @@ export async function GET() {
       // Use in-memory store in development
       ordersClosed = devOrdersClosed;
     } else {
-      // Use Vercel KV in production
-      try {
-        ordersClosed = (await kv.get<boolean>("ordersClosed")) || false;
-      } catch (error) {
-        console.error("Error accessing Vercel KV:", error);
-        ordersClosed = false;
-      }
+      // Use Redis in production
+      ordersClosed = await redis.get('ordersClosed') === 'true';
     }
 
     return NextResponse.json({ ordersClosed });
@@ -38,18 +33,10 @@ export async function POST() {
       devOrdersClosed = !devOrdersClosed;
       ordersClosed = devOrdersClosed;
     } else {
-      // Use Vercel KV in production
-      try {
-        const currentStatus = (await kv.get<boolean>("ordersClosed")) || false;
-        ordersClosed = !currentStatus;
-        await kv.set("ordersClosed", ordersClosed);
-      } catch (error) {
-        console.error("Error accessing Vercel KV:", error);
-        return NextResponse.json(
-          { error: "Failed to update order status" },
-          { status: 500 }
-        );
-      }
+      // Use Redis in production
+      const currentStatus = await redis.get('ordersClosed') === 'true';
+      ordersClosed = !currentStatus;
+      await redis.set('ordersClosed', String(ordersClosed));
     }
 
     return NextResponse.json({ success: true, ordersClosed });
