@@ -58,10 +58,6 @@ export default function ShirtOrderForm() {
     isPickup: false,
   });
 
-  useEffect(() => {
-    checkOrderStatus();
-  }, []);
-
   const checkOrderStatus = async () => {
     try {
       const response = await fetch('/api/orders/toggle-status');
@@ -74,6 +70,10 @@ export default function ShirtOrderForm() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    checkOrderStatus();
+  }, []);
 
   if (isLoading) {
     return (
