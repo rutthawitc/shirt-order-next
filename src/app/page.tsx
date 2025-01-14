@@ -3,7 +3,10 @@
 export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
 import ShirtOrderForm from "@/components/ShirtOrderForm";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 export default async function Home() {
   // Check order status
@@ -20,7 +23,20 @@ export default async function Home() {
     // Otherwise, show the order form
     return (
       <div className="w-full max-w-4xl mx-auto">
-        <ShirtOrderForm />
+        <Suspense
+          fallback={
+            <Card className="w-full max-w-4xl mx-auto mt-8">
+              <CardHeader className="flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </CardHeader>
+              <CardContent className="text-center">
+                <p>กำลังโหลด...</p>
+              </CardContent>
+            </Card>
+          }
+        >
+          <ShirtOrderForm />
+        </Suspense>
       </div>
     );
   } catch (error) {
