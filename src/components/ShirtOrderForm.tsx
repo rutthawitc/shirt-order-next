@@ -42,6 +42,15 @@ export default function ShirtOrderForm() {
 
   const initialPrice = SHIRT_DESIGNS.find((d) => d.id === "1")?.price || 750;
 
+  // Clean up the preview URL when component unmounts or when preview changes
+  useEffect(() => {
+    return () => {
+      if (previewImage) {
+        revokeObjectURL(previewImage);
+      }
+    };
+  }, [previewImage]);
+
   const [orderItems, setOrderItems] = useState<OrderItem[]>([
     {
       design: "1",
@@ -60,12 +69,12 @@ export default function ShirtOrderForm() {
 
   const checkOrderStatus = async () => {
     try {
-      const response = await fetch('/api/orders/toggle-status');
-      if (!response.ok) throw new Error('Failed to fetch order status');
+      const response = await fetch("/api/orders/toggle-status");
+      if (!response.ok) throw new Error("Failed to fetch order status");
       const data = await response.json();
       setOrdersClosed(data.ordersClosed);
     } catch (error) {
-      console.error('Error checking order status:', error);
+      console.error("Error checking order status:", error);
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +96,9 @@ export default function ShirtOrderForm() {
     return (
       <Card className="w-full max-w-4xl mx-auto mt-8">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">ขอบคุณสำหรับความสนใจ</CardTitle>
+          <CardTitle className="text-center text-2xl">
+            ขอบคุณสำหรับความสนใจ
+          </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-lg text-gray-700">
@@ -166,15 +177,6 @@ export default function ShirtOrderForm() {
       setPreviewImage(previewUrl);
     }
   };
-
-  // Clean up the preview URL when component unmounts or when preview changes
-  useEffect(() => {
-    return () => {
-      if (previewImage) {
-        revokeObjectURL(previewImage);
-      }
-    };
-  }, [previewImage]);
 
   const validateForm = (): boolean => {
     if (orderItems.length === 0) {
@@ -275,9 +277,7 @@ export default function ShirtOrderForm() {
     <div className="space-y-6">
       {/* Header Section */}
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">
-          ระบบสั่งจองเสื้อ
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">ระบบสั่งจองเสื้อ</h1>
         <h2 className="text-xl font-semibold text-gray-700">
           Tiger Thailand Meeting 2025
         </h2>
@@ -576,7 +576,8 @@ export default function ShirtOrderForm() {
             <DialogHeader>
               <DialogTitle>สั่งซื้อสำเร็จ</DialogTitle>
               <DialogDescription>
-                ขอบคุณชาวเสือสำหรับการสั่งซื้อ ทางเราได้รับคำสั่งซื้อของคุณเรียบร้อยแล้ว
+                ขอบคุณชาวเสือสำหรับการสั่งซื้อ
+                ทางเราได้รับคำสั่งซื้อของคุณเรียบร้อยแล้ว
                 และจะดำเนินการจัดส่งตามที่อยู่ที่ระบุไว้
               </DialogDescription>
             </DialogHeader>
