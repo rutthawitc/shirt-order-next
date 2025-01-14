@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download } from "lucide-react"
+import { Download, Lock, Unlock } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -22,9 +22,11 @@ export default function AdminDashboard() {
   const [showSlipDialog, setShowSlipDialog] = useState(false)
   const [showOrderDialog, setShowOrderDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [ordersClosed, setOrdersClosed] = useState(false)
 
   useEffect(() => {
     fetchOrders()
+    fetchOrderStatus()
   }, [])
 
   const fetchOrders = async () => {
@@ -37,6 +39,17 @@ export default function AdminDashboard() {
       console.error('Error fetching orders:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchOrderStatus = async () => {
+    try {
+      const response = await fetch('/api/orders/toggle-status')
+      if (!response.ok) throw new Error('Failed to fetch order status')
+      const data = await response.json()
+      setOrdersClosed(data.ordersClosed)
+    } catch (error) {
+      console.error('Error fetching order status:', error)
     }
   }
 
@@ -56,6 +69,19 @@ export default function AdminDashboard() {
       window.URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Export error:', error)
+    }
+  }
+
+  const handleToggleOrders = async () => {
+    try {
+      const response = await fetch('/api/orders/toggle-status', {
+        method: 'POST',
+      })
+      if (!response.ok) throw new Error('Failed to toggle order status')
+      const data = await response.json()
+      setOrdersClosed(data.ordersClosed)
+    } catch (error) {
+      console.error('Error toggling order status:', error)
     }
   }
 
@@ -92,6 +118,23 @@ export default function AdminDashboard() {
           >
             <Download className="h-4 w-4" />
             ส่งออกข้อมูล
+          </Button>
+          <Button
+            onClick={handleToggleOrders}
+            variant={ordersClosed ? "destructive" : "default"}
+            className="flex items-center gap-2"
+          >
+            {ordersClosed ? (
+              <>
+                <Lock className="h-4 w-4" />
+                เปิดรับออเดอร์
+              </>
+            ) : (
+              <>
+                <Unlock className="h-4 w-4" />
+                ปิดรับออเดอร์
+              </>
+            )}
           </Button>
         </div>
       </CardHeader>

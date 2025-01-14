@@ -37,6 +37,8 @@ export default function ShirtOrderForm() {
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [ordersClosed, setOrdersClosed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialPrice = SHIRT_DESIGNS.find((d) => d.id === "1")?.price || 750;
 
@@ -55,6 +57,49 @@ export default function ShirtOrderForm() {
     slipImage: null,
     isPickup: false,
   });
+
+  useEffect(() => {
+    checkOrderStatus();
+  }, []);
+
+  const checkOrderStatus = async () => {
+    try {
+      const response = await fetch('/api/orders/toggle-status');
+      if (!response.ok) throw new Error('Failed to fetch order status');
+      const data = await response.json();
+      setOrdersClosed(data.ordersClosed);
+    } catch (error) {
+      console.error('Error checking order status:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
+
+  if (ordersClosed) {
+    return (
+      <Card className="w-full max-w-4xl mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">ขอบคุณสำหรับความสนใจ</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <p className="text-lg text-gray-700">
+            ขณะนี้ระบบปิดรับการสั่งจองเสื้อแล้ว
+          </p>
+          <p className="text-gray-500">
+            โปรดติดตามข่าวสารการเปิดรับออเดอร์ในครั้งถัดไป
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const calculateTotalPrice = (): number => {
     return orderItems.reduce((total, item) => {
