@@ -16,11 +16,27 @@ export default async function Home() {
     const response = await fetch(`${baseUrl}/api/orders/toggle-status`, {
       cache: "no-store",
     });
-    if (!response.ok) throw new Error("Failed to fetch order status");
+
+    if (!response.ok) {
+      console.error("API Error:", await response.text());
+      return (
+        <div className="w-full max-w-4xl mx-auto mt-8">
+          <Card>
+            <CardContent className="p-6">
+              <p className="text-center text-red-600">
+                เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
     const data = await response.json();
 
     // Redirect to thank you page if orders are closed
     if (data.ordersClosed) {
+      // Use temporary redirect (307) to allow for order status changes
       redirect("/thank-you");
     }
 
@@ -43,8 +59,28 @@ export default async function Home() {
         </Suspense>
       </div>
     );
-  } catch (error) {
-    console.error("Error checking order status:", error);
-    return <div>เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</div>;
+  } catch (error: any) {
+    // Don't log redirect "errors" as they're expected behavior
+    if (!error.digest?.includes("NEXT_REDIRECT")) {
+      console.error("Error checking order status:", error);
+    }
+    
+    // Re-throw redirect errors
+    if (error.digest?.includes("NEXT_REDIRECT")) {
+      throw error;
+    }
+
+    // Show error UI for other errors
+    return (
+      <div className="w-full max-w-4xl mx-auto mt-8">
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-center text-red-600">
+              เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 }
