@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download, Lock, Unlock } from "lucide-react"
+import { Download, Lock, Unlock, Printer } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import Image from 'next/image'
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([])
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([])
   const [showSlipDialog, setShowSlipDialog] = useState(false)
   const [showOrderDialog, setShowOrderDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -85,6 +86,34 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleSelectOrder = (orderId: number, checked: boolean) => {
+    if (checked) {
+      setSelectedOrderIds([...selectedOrderIds, orderId])
+    } else {
+      setSelectedOrderIds(selectedOrderIds.filter(id => id !== orderId))
+    }
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedOrderIds(orders.map(o => o.id))
+    } else {
+      setSelectedOrderIds([])
+    }
+  }
+
+  const handlePrintLabels = () => {
+    if (selectedOrderIds.length === 0) return
+
+    const selectedOrders = orders.filter(o => selectedOrderIds.includes(o.id))
+
+    // Store selected orders in sessionStorage for the print page
+    sessionStorage.setItem('printOrders', JSON.stringify(selectedOrders))
+
+    // Open print page in new window
+    window.open('/admin/print-labels', '_blank')
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -96,7 +125,14 @@ export default function AdminDashboard() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>รายการสั่งซื้อทั้งหมด</CardTitle>
+        <div>
+          <CardTitle>รายการสั่งซื้อทั้งหมด</CardTitle>
+          {selectedOrderIds.length > 0 && (
+            <p className="text-sm text-gray-600 mt-1">
+              เลือกแล้ว {selectedOrderIds.length} รายการ
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <Button
             onClick={() => fetchOrders()}
@@ -110,6 +146,15 @@ export default function AdminDashboard() {
               <path d="M8 16H3v5" />
             </svg>
             รีเฟรช
+          </Button>
+          <Button
+            onClick={handlePrintLabels}
+            variant="outline"
+            className="flex items-center gap-2"
+            disabled={selectedOrderIds.length === 0}
+          >
+            <Printer className="h-4 w-4" />
+            พิมพ์รายการที่เลือก
           </Button>
           <Button
             onClick={handleExport}
@@ -139,8 +184,9 @@ export default function AdminDashboard() {
         </div>
       </CardHeader>
       <CardContent>
-        <AdminOrderTable 
+        <AdminOrderTable
           orders={orders}
+          selectedOrderIds={selectedOrderIds}
           onViewSlip={(order) => {
             setSelectedOrder(order)
             setShowSlipDialog(true)
@@ -150,6 +196,8 @@ export default function AdminDashboard() {
             setShowOrderDialog(true)
           }}
           onUpdateStatus={fetchOrders}
+          onSelectOrder={handleSelectOrder}
+          onSelectAll={handleSelectAll}
         />
       </CardContent>
 

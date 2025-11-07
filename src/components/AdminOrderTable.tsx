@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, FileImage } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
@@ -18,20 +19,29 @@ import { updateOrderStatus } from '@/app/actions/orders'
 
 interface AdminOrderTableProps {
   orders: Order[]
+  selectedOrderIds: number[]
   onViewSlip: (order: Order) => void
   onViewDetails: (order: Order) => void
   onUpdateStatus: () => void
+  onSelectOrder: (orderId: number, checked: boolean) => void
+  onSelectAll: (checked: boolean) => void
 }
 
-export default function AdminOrderTable({ 
-  orders, 
-  onViewSlip, 
+export default function AdminOrderTable({
+  orders,
+  selectedOrderIds,
+  onViewSlip,
   onViewDetails,
-  onUpdateStatus
+  onUpdateStatus,
+  onSelectOrder,
+  onSelectAll
 }: AdminOrderTableProps) {
   const [isUpdating, setIsUpdating] = useState(false)
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null)
   const { toast } = useToast()
+
+  const isAllSelected = orders.length > 0 && selectedOrderIds.length === orders.length
+  const isSomeSelected = selectedOrderIds.length > 0 && selectedOrderIds.length < orders.length
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -92,6 +102,13 @@ export default function AdminOrderTable({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[40px]">
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={(checked) => onSelectAll(checked as boolean)}
+                aria-label="เลือกทั้งหมด"
+              />
+            </TableHead>
             <TableHead>เลขที่คำสั่งซื้อ</TableHead>
             <TableHead>ชื่อ</TableHead>
             <TableHead>ราคารวม</TableHead>
@@ -103,7 +120,17 @@ export default function AdminOrderTable({
         </TableHeader>
         <TableBody>
           {orders.map((order) => (
-            <TableRow key={order.id}>
+            <TableRow
+              key={order.id}
+              className={selectedOrderIds.includes(order.id) ? 'bg-blue-50' : ''}
+            >
+              <TableCell>
+                <Checkbox
+                  checked={selectedOrderIds.includes(order.id)}
+                  onCheckedChange={(checked) => onSelectOrder(order.id, checked as boolean)}
+                  aria-label={`เลือกคำสั่งซื้อ ${order.id}`}
+                />
+              </TableCell>
               <TableCell>{order.id}</TableCell>
               <TableCell>{order.name}</TableCell>
               <TableCell>{order.total_price.toLocaleString()} บาท</TableCell>

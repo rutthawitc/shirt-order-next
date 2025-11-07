@@ -47,6 +47,7 @@ export interface CustomerInfo {
 export interface Order {
   id: number;
   name: string;
+  phone: string;
   address: string;
   is_pickup: boolean;
   total_price: number;
