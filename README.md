@@ -244,39 +244,6 @@ order_items
 └── created_at (TIMESTAMP)
 ```
 
-## 🔴 Redis Setup (Recommended for Production)
-
-The application uses Redis to store the order toggle status (open/closed). While Redis is **optional** (it will fall back to in-memory storage), it's **highly recommended** for production deployments.
-
-### Why Redis?
-
-- ✅ **Persistent State**: Order status survives serverless function restarts
-- ✅ **Shared State**: All Vercel regions share the same status
-- ✅ **Free Tier Available**: Upstash offers generous free tier
-
-### Quick Setup (5 minutes)
-
-**Recommended: Upstash Redis (Free Tier)**
-
-1. **Create Account**: Go to [Upstash Console](https://console.upstash.com)
-2. **Create Database**: Choose Regional, select `ap-southeast-1` (Singapore)
-3. **Copy Redis URL**: Get connection string from dashboard
-4. **Add to Vercel**: Settings → Environment Variables → Add `REDIS_URL`
-5. **Redeploy**: Trigger new deployment
-
-📖 **Detailed Guides:**
-- **Quick Start**: See [UPSTASH_QUICK_START.md](./UPSTASH_QUICK_START.md) - 5-minute setup
-- **Full Guide**: See [REDIS_SETUP.md](./REDIS_SETUP.md) - Comprehensive documentation
-
-### Without Redis (In-Memory Fallback)
-
-The application will work without Redis, but:
-- ⚠️ Order toggle status resets when serverless functions restart
-- ⚠️ Each Vercel region maintains separate state
-- ⚠️ Not recommended for production use
-
-Simply leave `REDIS_URL` unset to use in-memory storage.
-
 ## 🏃 Running the Application
 
 ### Development Mode
