@@ -10,13 +10,14 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData()
     const name = formData.get('name') as string
+    const phone = formData.get('phone') as string
     const address = formData.get('address') as string
     const isPickup = formData.get('isPickup') === 'true'
     const totalPrice = parseFloat(formData.get('totalPrice') as string)
     const items = JSON.parse(formData.get('items') as string) as CreateOrderItem[]
     const slipImage = formData.get('slipImage') as File
 
-    if (!name || !items || !slipImage) {
+    if (!name || !phone || !items || !slipImage) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -43,6 +44,7 @@ export async function POST(request: Request) {
     // Create order in Supabase
     const orderData = {
       name,
+      phone,
       address,
       is_pickup: isPickup,
       total_price: totalPrice,
@@ -87,10 +89,11 @@ export async function POST(request: Request) {
 
     if (itemsError) throw itemsError
 
-    // Send LINE notification
+    // Send Telegram notification
     await sendOrderNotification({
       orderId: order.id,
       name: order.name,
+      phone: order.phone,
       totalAmount: order.total_price,
       items: orderItems,
       isPickup: order.is_pickup,

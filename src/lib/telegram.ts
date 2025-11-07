@@ -5,6 +5,7 @@ import type { TelegramResponse, SendMessageParams, SendPhotoParams } from '@/typ
 interface NotifyOrderParams {
   orderId: number;
   name: string;
+  phone: string;
   totalAmount: number;
   items: Array<{
     design: string;
@@ -103,6 +104,7 @@ async function getDesignName(designId: string): Promise<string> {
 export async function sendOrderNotification({
   orderId,
   name,
+  phone,
   totalAmount,
   items,
   isPickup,
@@ -133,6 +135,7 @@ export async function sendOrderNotification({
 
 📋 <b>รหัสสั่งซื้อ:</b> ${orderId}
 👤 <b>ชื่อผู้สั่ง:</b> ${name}
+📞 <b>เบอร์โทรศัพท์:</b> ${phone}
 💰 <b>ยอดรวม:</b> ${totalAmount.toLocaleString()} บาท
 
 📦 <b>รายการสินค้า:</b>
