@@ -4,18 +4,29 @@ import { supabase } from '@/lib/supabase'
 import { cloudinary } from '@/lib/cloudinary'
 import { CloudinaryUploadResponse } from '@/types/cloudinary'
 
-// GET - Fetch all active shirt designs
-export async function GET() {
+// GET - Fetch shirt designs
+export async function GET(request: Request) {
   try {
-    const { data: designs, error } = await supabase
-      .from('shirt_designs')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order', { ascending: true })
+    const { searchParams } = new URL(request.url)
+    const includeInactive = searchParams.get('includeInactive') === 'true'
+
+    let query = supabase.from('shirt_designs').select('*')
+
+    // Only filter by is_active if not requesting all designs
+    if (!includeInactive) {
+      query = query.eq('is_active', true)
+    }
+
+    const { data: designs, error } = await query.order('display_order', { ascending: true })
 
     if (error) throw error
 
-    // Transform to client format (compatible with ShirtDesign interface)
+    // For admin (includeInactive=true), return full DB format
+    if (includeInactive) {
+      return NextResponse.json(designs)
+    }
+
+    // For public, transform to client format (compatible with ShirtDesign interface)
     const transformedDesigns = designs.map((design) => ({
       id: design.id,
       name: design.name,

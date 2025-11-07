@@ -36,7 +36,8 @@ export default function AdminDesignsPage() {
 
   const fetchDesigns = async () => {
     try {
-      const response = await fetch('/api/shirt-designs')
+      // Fetch all designs including inactive ones for admin
+      const response = await fetch('/api/shirt-designs?includeInactive=true')
       if (!response.ok) throw new Error('Failed to fetch designs')
       const data = await response.json()
       setDesigns(data)
@@ -216,6 +217,10 @@ export default function AdminDesignsPage() {
                         fill
                         className="object-contain"
                         unoptimized
+                        onError={(e) => {
+                          console.error('Failed to load image:', design.front_image)
+                          e.currentTarget.style.display = 'none'
+                        }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
@@ -234,6 +239,10 @@ export default function AdminDesignsPage() {
                         fill
                         className="object-contain"
                         unoptimized
+                        onError={(e) => {
+                          console.error('Failed to load image:', design.back_image)
+                          e.currentTarget.style.display = 'none'
+                        }}
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
