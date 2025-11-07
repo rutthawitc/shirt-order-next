@@ -57,14 +57,28 @@ export default function PrintShippingLabels() {
     <div className="print-container">
       <style jsx global>{`
         @media print {
+          * {
+            margin: 0;
+            padding: 0;
+          }
+
           body {
             print-color-adjust: exact;
             -webkit-print-color-adjust: exact;
+            margin: 0;
+            padding: 0;
           }
 
           @page {
             size: A4;
             margin: 1cm;
+            margin-top: 0;
+            margin-bottom: 0;
+          }
+
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
           }
 
           .no-print {
@@ -77,6 +91,8 @@ export default function PrintShippingLabels() {
 
           .print-container {
             width: 100%;
+            margin: 0;
+            padding: 0;
           }
         }
 
@@ -96,6 +112,9 @@ export default function PrintShippingLabels() {
         </p>
         <p className="text-sm text-blue-600 mt-1">
           หน้าต่างพิมพ์จะเปิดโดยอัตโนมัติ หรือกด Ctrl+P เพื่อพิมพ์
+        </p>
+        <p className="text-xs text-blue-500 mt-2">
+          💡 ในการตั้งค่าพิมพ์ ปิด &quot;ส่วนหัวและส่วนท้าย&quot; เพื่อให้ป้ายจัดส่งสะอาด
         </p>
       </div>
 
