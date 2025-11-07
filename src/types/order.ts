@@ -17,6 +17,16 @@ export interface DBShirtDesign {
   back_image: string;
   is_active: boolean;
   display_order: number;
+  is_combo?: boolean; // True if this design is a combo/bundle of other designs
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ComboComponent {
+  id: number;
+  combo_design_id: string;
+  component_design_id: string;
+  quantity_multiplier: number;
   created_at: string;
   updated_at: string;
 }

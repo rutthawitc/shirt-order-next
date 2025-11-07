@@ -2,6 +2,7 @@
 // src/app/api/orders/export/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getComboRelationships } from '@/lib/combo-products';
 import * as XLSX from 'xlsx';
 
 export async function GET() {
@@ -29,6 +30,9 @@ export async function GET() {
 
     // Create design name mapping from database
     const designNameMap = new Map(designs.map(d => [d.id, d.name]));
+
+    // Fetch combo product relationships from database
+    const comboMap = await getComboRelationships();
 
     // Map order status to Thai labels
     const getStatusLabel = (status: string): string => {
@@ -79,27 +83,32 @@ export async function GET() {
         const size = item.size;
         const quantity = item.quantity;
 
-        // Handle design #3 (split between designs 1 and 2)
-        if (design === '3') {
-          // Add quantity to both design 1 and 2
-          ['1', '2'].forEach(designId => {
-            if (sizeCount.has(designId) && size) {
-              const designSizes = sizeCount.get(designId)!;
-              designSizes[size] = (designSizes[size] || 0) + quantity;
+        // Check if this is a combo product (database-driven)
+        const comboComponents = comboMap.get(design);
+
+        if (comboComponents && comboComponents.length > 0) {
+          // This is a combo product - split it into components
+          comboComponents.forEach(comp => {
+            if (sizeCount.has(comp.component) && size) {
+              const designSizes = sizeCount.get(comp.component)!;
+              designSizes[size] = (designSizes[size] || 0) + (quantity * comp.multiplier);
             }
           });
         } else if (sizeCount.has(design) && size) {
-          // Normal processing for other designs
+          // Normal processing for non-combo designs
           const designSizes = sizeCount.get(design)!;
           designSizes[size] = (designSizes[size] || 0) + quantity;
         }
       });
 
       // Convert to array format for Excel
-      const sizeSummary = Array.from(sizeCount.entries()).map(([design, sizeData]) => ({
-        'แบบเสื้อ': designNameMap.get(design) || 'ไม่ระบุ',
-        ...sizeData
-      }));
+      // Filter out combo products - only show their component designs in the summary
+      const sizeSummary = Array.from(sizeCount.entries())
+        .filter(([design]) => !comboMap.has(design)) // Exclude combo products
+        .map(([design, sizeData]) => ({
+          'แบบเสื้อ': designNameMap.get(design) || 'ไม่ระบุ',
+          ...sizeData
+        }));
 
       return sizeSummary;
     }
