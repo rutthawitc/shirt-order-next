@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { cloudinary } from '@/lib/cloudinary'
 import { CloudinaryUploadResponse } from '@/types/cloudinary'
 import { CreateOrderItem, ShirtDesignPrice } from '@/types/order'
-import { sendOrderNotification } from '@/lib/line-notify'
+import { sendOrderNotification } from '@/lib/telegram'
 
 export async function POST(request: Request) {
   try {
@@ -58,21 +58,27 @@ export async function POST(request: Request) {
 
     if (orderError) throw orderError
 
-    // Define price mapping
-    const PRICE_MAP: ShirtDesignPrice = {
-      '1': 750,
-      '2': 700,
-      '3': 1100,
-      '4': 500
-    }
+    // Fetch current prices from database
+    const { data: designs, error: designsError } = await supabase
+      .from('shirt_designs')
+      .select('id, price')
+      .eq('is_active', true)
 
-    // Create order items
+    if (designsError) throw designsError
+
+    // Create price mapping from database
+    const PRICE_MAP: Record<string, number> = designs.reduce((acc: Record<string, number>, design: { id: string; price: number }) => {
+      acc[design.id] = design.price
+      return acc
+    }, {})
+
+    // Create order items with current prices
     const orderItems = items.map(item => ({
       order_id: order.id,
       design: item.design,
       size: item.size,
       quantity: item.quantity,
-      price_per_unit: PRICE_MAP[item.design]
+      price_per_unit: PRICE_MAP[item.design] || 0
     }))
 
     const { error: itemsError } = await supabase

@@ -54,6 +54,7 @@ Stores customer order information.
 |--------|------|-------------|
 | id | BIGSERIAL | Primary key (auto-increment) |
 | name | VARCHAR(255) | Customer name |
+| phone | VARCHAR(20) | Customer phone number |
 | address | TEXT | Delivery address (required if not pickup) |
 | is_pickup | BOOLEAN | Whether customer will pickup at event |
 | total_price | DECIMAL(10,2) | Total order amount in THB |
@@ -226,6 +227,43 @@ ORDER BY created_at DESC;
 - Verify your Supabase URL and anon key
 - Check that your IP is allowed in Supabase settings
 - Ensure your Supabase project is active
+
+### Issue: "violates check constraint valid_design" Error
+If you see an error like `violates check constraint "valid_design"` when creating orders:
+
+1. **Cause**: The `shirt_designs` table contains designs with invalid IDs (e.g., '001', '002') that don't match the constraint `design IN ('1', '2', '3', '4')`
+2. **Fix**: Run the migration in `fix-shirt-design-ids.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `fix-shirt-design-ids.sql`
+   - Click Run
+3. **Verify**: After running the migration, check that only designs with valid IDs exist:
+   ```sql
+   SELECT id, name, price FROM shirt_designs;
+   ```
+   Should show only designs with IDs: '1', '2', '3', '4'
+
+### Issue: "null value in column back_image violates not-null constraint" Error
+If you see this error when creating shirt designs:
+
+1. **Cause**: The `shirt_designs` table was created with `back_image` as `NOT NULL`, but the back image is now optional
+2. **Fix**: Run the migration in `update-back-image-nullable.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `update-back-image-nullable.sql`
+   - Click Run
+3. **Why**: This allows creating shirt designs with only a front image, supporting single-sided designs or designs where the back image isn't ready yet
+
+### Issue: Missing phone column in orders table
+If you see an error about a missing `phone` column when submitting orders:
+
+1. **Cause**: The `orders` table doesn't have a phone column for storing customer phone numbers
+2. **Fix**: Run the migration in `add-phone-column.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `add-phone-column.sql`
+   - Click Run
+3. **Note**: For new Supabase projects, use the latest `supabase-schema.sql` which includes the phone column by default
 
 ## Migration Notes
 

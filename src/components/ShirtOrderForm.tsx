@@ -25,12 +25,14 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { SHIRT_DESIGNS, SIZES } from "@/constants/shirt-designs";
+import { SIZES } from "@/constants/shirt-designs";
 import SizeGuideCard from "@/components/SizeGuideCard";
-import SouvenirSizeGuideCard from "@/components/SouvenirSizeGuideCard";
-import type { OrderItem, DBOrderItem, CustomerInfo } from "@/types/order";
+import type { OrderItem, DBOrderItem, CustomerInfo, ShirtDesign } from "@/types/order";
 import ShirtDesignCard from "@/components/ShirtDesignCard";
 import { createObjectURL, revokeObjectURL } from "@/lib/image-helpers";
+
+const SHIPPING_COST = 50; // บาท
+const SHIPPING_PROVIDER = "J&T";
 
 export default function ShirtOrderForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,8 +41,9 @@ export default function ShirtOrderForm() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [ordersClosed, setOrdersClosed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [shirtDesigns, setShirtDesigns] = useState<ShirtDesign[]>([]);
 
-  const initialPrice = SHIRT_DESIGNS.find((d) => d.id === "1")?.price || 750;
+  const initialPrice = shirtDesigns.find((d) => d.id === "1")?.price || 750;
 
   // Clean up the preview URL when component unmounts or when preview changes
   useEffect(() => {
@@ -62,10 +65,22 @@ export default function ShirtOrderForm() {
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: "",
+    phone: "",
     address: "",
     slipImage: null,
     isPickup: false,
   });
+
+  const fetchShirtDesigns = async () => {
+    try {
+      const response = await fetch("/api/shirt-designs");
+      if (!response.ok) throw new Error("Failed to fetch shirt designs");
+      const data = await response.json();
+      setShirtDesigns(data);
+    } catch (error) {
+      console.error("Error fetching shirt designs:", error);
+    }
+  };
 
   const checkOrderStatus = async () => {
     try {
@@ -81,7 +96,10 @@ export default function ShirtOrderForm() {
   };
 
   useEffect(() => {
-    checkOrderStatus();
+    const initializeForm = async () => {
+      await Promise.all([fetchShirtDesigns(), checkOrderStatus()]);
+    };
+    initializeForm();
   }, []);
 
   if (isLoading) {
@@ -114,7 +132,7 @@ export default function ShirtOrderForm() {
 
   const calculateTotalPrice = (): number => {
     return orderItems.reduce((total, item) => {
-      const design = SHIRT_DESIGNS.find((d) => d.id === item.design);
+      const design = shirtDesigns.find((d) => d.id === item.design);
       return total + (design?.price ?? 0) * item.quantity;
     }, 0);
   };
@@ -132,7 +150,7 @@ export default function ShirtOrderForm() {
 
     // Update price_per_unit when design changes
     if (field === "design") {
-      const design = SHIRT_DESIGNS.find((d) => d.id === value);
+      const design = shirtDesigns.find((d) => d.id === value);
       newItems[index].price_per_unit = design?.price || 750;
     }
 
@@ -187,6 +205,10 @@ export default function ShirtOrderForm() {
       setError("กรุณากรอกชื่อ-นามสกุล");
       return false;
     }
+    if (!customerInfo.phone.trim()) {
+      setError("กรุณากรอกเบอร์โทรศัพท์");
+      return false;
+    }
     if (!customerInfo.isPickup && !customerInfo.address.trim()) {
       setError("กรุณากรอกที่อยู่จัดส่ง");
       return false;
@@ -216,12 +238,13 @@ export default function ShirtOrderForm() {
         quantity: item.quantity,
         price_per_unit:
           item.price_per_unit ||
-          SHIRT_DESIGNS.find((d) => d.id === item.design)?.price ||
+          shirtDesigns.find((d) => d.id === item.design)?.price ||
           750,
       }));
 
       const formData = new FormData();
       formData.append("name", customerInfo.name);
+      formData.append("phone", customerInfo.phone);
       formData.append("address", customerInfo.address);
       formData.append("isPickup", customerInfo.isPickup.toString());
       formData.append("items", JSON.stringify(itemsForSubmission));
@@ -255,6 +278,7 @@ export default function ShirtOrderForm() {
 
       setCustomerInfo({
         name: "",
+        phone: "",
         address: "",
         slipImage: null,
         isPickup: false,
@@ -279,14 +303,12 @@ export default function ShirtOrderForm() {
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-gray-900">ระบบสั่งจองเสื้อ</h1>
         <h2 className="text-xl font-semibold text-gray-700">
-          Tiger Thailand Meeting 2025
+          Tiger Thailand Meeting 2026
         </h2>
         <div className="space-y-2">
-          <p className="text-red-600 font-medium">
-            ** เสื้อสำหรับใส่เข้างาน คือ แบบที่ 1 และ แบบที่ 2 เท่านั้น **
-          </p>
+          <p className="text-green-600 font-medium">ณ เมืองคอง</p>
           <p className="text-orange-600 font-medium">
-            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 มกราคม 2568 **
+            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 มกราคม 2569 **
           </p>
         </div>
         <p className="text-gray-600">เลือกแบบและขนาดตามที่ต้องการ</p>
@@ -295,7 +317,7 @@ export default function ShirtOrderForm() {
       {/* Rest of the form */}
       <Card>
         <CardHeader>
-          <CardTitle>สั่งจองเสื้อ</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           {error && (
@@ -313,7 +335,7 @@ export default function ShirtOrderForm() {
                 แบบเสื้อที่มีให้เลือก
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {SHIRT_DESIGNS.map((design) => (
+                {shirtDesigns.map((design) => (
                   <ShirtDesignCard key={design.id} design={design} />
                 ))}
               </div>
@@ -321,7 +343,6 @@ export default function ShirtOrderForm() {
 
             {/* Size Guides */}
             <SizeGuideCard />
-            <SouvenirSizeGuideCard />
 
             {/* Order Items */}
             <div className="space-y-4">
@@ -367,7 +388,7 @@ export default function ShirtOrderForm() {
                             <SelectValue placeholder="เลือกแบบเสื้อ" />
                           </SelectTrigger>
                           <SelectContent>
-                            {SHIRT_DESIGNS.map((design) => (
+                            {shirtDesigns.map((design) => (
                               <SelectItem key={design.id} value={design.id}>
                                 {design.name} - {design.price.toLocaleString()}{" "}
                                 บาท
@@ -426,20 +447,20 @@ export default function ShirtOrderForm() {
 
             {/* Total Price */}
             <div className="text-right space-y-2">
-              <div className="text-sm text-red-500 font-semibold">
-                ฟรีค่าจัดส่ง
+              <div className="text-sm text-gray-600">
+                ค่าจัดส่ง {SHIPPING_COST} บาท (จัดส่งโดย {SHIPPING_PROVIDER})
               </div>
               <div className="text-xl font-semibold">
-                ราคารวมทั้งสิ้น: {calculateTotalPrice().toLocaleString()} บาท
+                ราคารวมทั้งสิ้น: {(calculateTotalPrice() + SHIPPING_COST).toLocaleString()} บาท
               </div>
             </div>
 
             {/* Bank Account Info */}
             <div className="bg-gray-100 p-4 rounded-md">
               <p className="font-semibold mb-2">ข้อมูลบัญชีสำหรับโอนเงิน</p>
-              <p>ชื่อบัญชี: นายกิตติพิชญ์ อึงสถิตถาวร</p>
-              <p>เลขที่บัญชี: 405-0-77689-8</p>
-              <p>ธนาคาร: ธนาคารกรุงไทย</p>
+              <p>ชื่อบัญชี: ธรรมนูญ ธรรมรัตน์</p>
+              <p>เลขที่บัญชี: 016-2-79741-7</p>
+              <p>ธนาคาร: ธนาคารกสิกรไทย</p>
             </div>
 
             {/* Customer Info */}
@@ -475,7 +496,21 @@ export default function ShirtOrderForm() {
 
               <div>
                 <label className="block mb-2">
-                  ที่อยู่จัดส่ง + เบอร์โทร{" "}
+                  เบอร์โทรศัพท์ <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={customerInfo.phone}
+                  onChange={(e) =>
+                    handleCustomerInfoChange("phone", e.target.value)
+                  }
+                  placeholder="กรอกเบอร์โทรศัพท์ (เช่น 08X-XXX-XXXX)"
+                  type="tel"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2">
+                  ที่อยู่จัดส่ง{" "}
                   {!customerInfo.isPickup && (
                     <span className="text-sm text-red-500">(จำเป็น)</span>
                   )}

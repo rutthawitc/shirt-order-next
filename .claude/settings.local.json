@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(yarn --version:*)",
+      "Bash(curl:*)",
+      "Bash(git log:*)",
+      "Bash(yarn add:*)",
+      "Bash(yarn build)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

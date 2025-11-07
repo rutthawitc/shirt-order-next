@@ -1,5 +1,6 @@
 // src/app/admin/layout.tsx
 import { Metadata } from 'next'
+import AdminNav from '@/components/AdminNav'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard',
@@ -13,6 +14,7 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
+      <AdminNav />
       {children}
     </div>
   )
