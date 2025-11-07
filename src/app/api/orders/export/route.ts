@@ -30,6 +30,18 @@ export async function GET() {
     // Create design name mapping from database
     const designNameMap = new Map(designs.map(d => [d.id, d.name]));
 
+    // Map order status to Thai labels
+    const getStatusLabel = (status: string): string => {
+      const statusLabels: Record<string, string> = {
+        'pending': 'รอตรวจสอบ',
+        'confirmed': 'ยืนยันการชำระเงิน',
+        'processing': 'กำลังจัดส่ง',
+        'completed': 'จัดส่งแล้ว',
+        'cancelled': 'ยกเลิก'
+      };
+      return statusLabels[status] || status;
+    };
+
     // Format orders for Excel
     const ordersForExcel = orders.map(order => ({
       'รหัสออเดอร์': order.id,
@@ -37,7 +49,7 @@ export async function GET() {
       'เบอร์โทรศัพท์': order.phone || '-',
       'ที่อยู่': order.is_pickup ? 'รับหน้างาน' : order.address,
       'ยอดรวม': order.total_price,
-      'สถานะ': order.status === 'pending' ? 'รอดำเนินการ' : 'จัดส่งแล้ว',
+      'สถานะ': getStatusLabel(order.status),
       'วันที่สั่ง': new Date(order.created_at).toLocaleString('th-TH')
     }));
 
