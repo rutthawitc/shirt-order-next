@@ -6,8 +6,8 @@ export default function SizeGuideCard() {
   return (
     <Card className="w-full mb-8">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold" style={{ fontSize: '80%' }}>ตารางขนาดเสื้อ
-          <p className="text-sm text-red-500" style={{ fontSize: '80%' }}>* ขนาดเสื้อแขนสั้นแขนยาวมีขนาดเท่ากัน *</p>
+        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อ
+          <p className="text-sm text-red-500">* ขนาดเสื้อแขนสั้นแขนยาวมีขนาดเท่ากัน *</p>
         </CardTitle>
       </CardHeader>
       <CardContent>
