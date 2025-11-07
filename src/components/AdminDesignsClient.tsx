@@ -183,6 +183,36 @@ export default function AdminDesignsClient() {
     }
   }
 
+  const handleReactivate = async (id: string) => {
+    if (!confirm('คุณต้องการเปิดใช้งานแบบเสื้อนี้อีกครั้งหรือไม่?')) return
+
+    try {
+      const formData = new FormData()
+      formData.append('isActive', 'true')
+
+      const response = await fetch(`/api/shirt-designs/${id}`, {
+        method: 'PUT',
+        body: formData
+      })
+
+      if (!response.ok) throw new Error('Failed to reactivate design')
+
+      toast({
+        title: 'สำเร็จ!',
+        description: 'เปิดใช้งานแบบเสื้ออีกครั้งเรียบร้อยแล้ว'
+      })
+
+      fetchDesigns()
+    } catch (error) {
+      console.error('Error reactivating design:', error)
+      toast({
+        title: 'เกิดข้อผิดพลาด',
+        description: 'ไม่สามารถเปิดใช้งานแบบเสื้อได้',
+        variant: 'destructive'
+      })
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-8">
@@ -203,9 +233,14 @@ export default function AdminDesignsClient() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {designs.map((design) => (
-          <Card key={design.id}>
+          <Card key={design.id} className={!design.is_active ? 'opacity-60 border-red-300' : ''}>
             <CardHeader>
-              <CardTitle>{design.name}</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className={!design.is_active ? 'text-gray-500' : ''}>{design.name}</CardTitle>
+                {!design.is_active && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">ไม่ใช้งาน</span>
+                )}
+              </div>
               <CardDescription>฿{design.price.toLocaleString()}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -257,12 +292,20 @@ export default function AdminDesignsClient() {
               </div>
               <p className="text-sm text-gray-600 mb-4">{design.description}</p>
               <div className="flex gap-2">
-                <Button onClick={() => openEditDialog(design)} variant="outline" className="flex-1">
-                  แก้ไข
-                </Button>
-                <Button onClick={() => handleDelete(design.id)} variant="destructive" className="flex-1">
-                  ลบ
-                </Button>
+                {design.is_active ? (
+                  <>
+                    <Button onClick={() => openEditDialog(design)} variant="outline" className="flex-1">
+                      แก้ไข
+                    </Button>
+                    <Button onClick={() => handleDelete(design.id)} variant="destructive" className="flex-1">
+                      ลบ
+                    </Button>
+                  </>
+                ) : (
+                  <Button onClick={() => handleReactivate(design.id)} variant="outline" className="flex-1">
+                    เปิดใช้งานอีกครั้ง
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
