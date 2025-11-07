@@ -147,7 +147,7 @@ export default function ShirtOrderForm() {
 
     // Update price_per_unit when design changes
     if (field === "design") {
-      const design = SHIRT_DESIGNS.find((d) => d.id === value);
+      const design = shirtDesigns.find((d) => d.id === value);
       newItems[index].price_per_unit = design?.price || 750;
     }
 
@@ -231,7 +231,7 @@ export default function ShirtOrderForm() {
         quantity: item.quantity,
         price_per_unit:
           item.price_per_unit ||
-          SHIRT_DESIGNS.find((d) => d.id === item.design)?.price ||
+          shirtDesigns.find((d) => d.id === item.design)?.price ||
           750,
       }));
 
