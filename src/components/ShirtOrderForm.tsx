@@ -25,10 +25,10 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { SHIRT_DESIGNS, SIZES } from "@/constants/shirt-designs";
+import { SIZES } from "@/constants/shirt-designs";
 import SizeGuideCard from "@/components/SizeGuideCard";
 import SouvenirSizeGuideCard from "@/components/SouvenirSizeGuideCard";
-import type { OrderItem, DBOrderItem, CustomerInfo } from "@/types/order";
+import type { OrderItem, DBOrderItem, CustomerInfo, ShirtDesign } from "@/types/order";
 import ShirtDesignCard from "@/components/ShirtDesignCard";
 import { createObjectURL, revokeObjectURL } from "@/lib/image-helpers";
 
@@ -39,8 +39,9 @@ export default function ShirtOrderForm() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [ordersClosed, setOrdersClosed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [shirtDesigns, setShirtDesigns] = useState<ShirtDesign[]>([]);
 
-  const initialPrice = SHIRT_DESIGNS.find((d) => d.id === "1")?.price || 750;
+  const initialPrice = shirtDesigns.find((d) => d.id === "1")?.price || 750;
 
   // Clean up the preview URL when component unmounts or when preview changes
   useEffect(() => {
@@ -67,6 +68,17 @@ export default function ShirtOrderForm() {
     isPickup: false,
   });
 
+  const fetchShirtDesigns = async () => {
+    try {
+      const response = await fetch("/api/shirt-designs");
+      if (!response.ok) throw new Error("Failed to fetch shirt designs");
+      const data = await response.json();
+      setShirtDesigns(data);
+    } catch (error) {
+      console.error("Error fetching shirt designs:", error);
+    }
+  };
+
   const checkOrderStatus = async () => {
     try {
       const response = await fetch("/api/orders/toggle-status");
@@ -81,7 +93,10 @@ export default function ShirtOrderForm() {
   };
 
   useEffect(() => {
-    checkOrderStatus();
+    const initializeForm = async () => {
+      await Promise.all([fetchShirtDesigns(), checkOrderStatus()]);
+    };
+    initializeForm();
   }, []);
 
   if (isLoading) {
@@ -114,7 +129,7 @@ export default function ShirtOrderForm() {
 
   const calculateTotalPrice = (): number => {
     return orderItems.reduce((total, item) => {
-      const design = SHIRT_DESIGNS.find((d) => d.id === item.design);
+      const design = shirtDesigns.find((d) => d.id === item.design);
       return total + (design?.price ?? 0) * item.quantity;
     }, 0);
   };
@@ -313,7 +328,7 @@ export default function ShirtOrderForm() {
                 แบบเสื้อที่มีให้เลือก
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {SHIRT_DESIGNS.map((design) => (
+                {shirtDesigns.map((design) => (
                   <ShirtDesignCard key={design.id} design={design} />
                 ))}
               </div>
@@ -367,7 +382,7 @@ export default function ShirtOrderForm() {
                             <SelectValue placeholder="เลือกแบบเสื้อ" />
                           </SelectTrigger>
                           <SelectContent>
-                            {SHIRT_DESIGNS.map((design) => (
+                            {shirtDesigns.map((design) => (
                               <SelectItem key={design.id} value={design.id}>
                                 {design.name} - {design.price.toLocaleString()}{" "}
                                 บาท

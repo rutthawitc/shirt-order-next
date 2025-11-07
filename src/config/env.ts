@@ -5,7 +5,6 @@ export const env = {
     cloudinaryName: process.env.CLOUDINARY_CLOUD_NAME!,
     cloudinaryKey: process.env.CLOUDINARY_API_KEY!,
     cloudinarySecret: process.env.CLOUDINARY_API_SECRET!,
-    lineNotifyToken: process.env.LINE_NOTIFY_TOKEN!,
     adminPassword: process.env.ADMIN_PASSWORD!,
     isTestEnvironment: process.env.NODE_ENV === 'development',
   }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { supabase } from '@/lib/supabase'
-import { sendStatusUpdateNotification } from '@/lib/line-notify'
+import { sendStatusUpdateNotification } from '@/lib/telegram'
 
 export async function updateOrderStatus(orderId: number, newStatus: string) {
   try {
@@ -31,7 +31,7 @@ export async function updateOrderStatus(orderId: number, newStatus: string) {
       return { success: false, error: 'Order not found' }
     }
 
-    // Send LINE notification
+    // Send Telegram notification
     try {
       await sendStatusUpdateNotification(
         updatedOrder.id,
@@ -40,7 +40,7 @@ export async function updateOrderStatus(orderId: number, newStatus: string) {
       )
     } catch (notifyError) {
       // Log notification error but don't fail the request
-      console.error('Error sending LINE notification:', notifyError)
+      console.error('Error sending Telegram notification:', notifyError)
     }
 
     // Revalidate only the admin path
