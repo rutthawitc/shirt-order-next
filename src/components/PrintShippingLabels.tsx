@@ -106,7 +106,7 @@ export default function PrintShippingLabels() {
             index < orders.length - 1 ? 'page-break' : ''
           }`}
         >
-          <div className="text-center mb-4 pb-4 border-b-2 border-gray-300">
+          <div className="text-center mb-4 pb-4 border-b-2 border-gray-300" style={{ transform: 'scale(0.8)', transformOrigin: 'center top' }}>
             <h1 className="text-2xl font-bold">ใบปะหน้าพัสดุ</h1>
             <p className="text-lg mt-1">Tiger Thailand Meeting 2026</p>
           </div>
