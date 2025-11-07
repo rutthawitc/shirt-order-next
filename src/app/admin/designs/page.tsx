@@ -113,10 +113,10 @@ export default function AdminDesignsPage() {
         })
       } else {
         // Create new design
-        if (!frontImage || !backImage) {
+        if (!frontImage) {
           toast({
             title: 'ข้อผิดพลาด',
-            description: 'กรุณาเลือกรูปภาพด้านหน้าและด้านหลัง',
+            description: 'กรุณาเลือกรูปภาพด้านหน้า',
             variant: 'destructive'
           })
           setIsSubmitting(false)
@@ -125,7 +125,10 @@ export default function AdminDesignsPage() {
 
         data.append('id', formData.id)
         data.append('frontImage', frontImage)
-        data.append('backImage', backImage)
+        // Back image is optional
+        if (backImage) {
+          data.append('backImage', backImage)
+        }
 
         const response = await fetch('/api/shirt-designs', {
           method: 'POST',
@@ -344,13 +347,12 @@ export default function AdminDesignsPage() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  รูปภาพด้านหลัง {editingDesign && '(เลือกเฉพาะเมื่อต้องการเปลี่ยน)'}
+                  รูปภาพด้านหลัง (ไม่บังคับ) {editingDesign && '- เลือกเฉพาะเมื่อต้องการเปลี่ยน'}
                 </label>
                 <Input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setBackImage(e.target.files?.[0] || null)}
-                  required={!editingDesign}
                 />
               </div>
             </div>

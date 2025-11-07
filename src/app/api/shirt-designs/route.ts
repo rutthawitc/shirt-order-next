@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const backImage = formData.get('backImage') as File
     const displayOrder = parseInt(formData.get('displayOrder') as string) || 0
 
-    if (!id || !name || !price || !description || !frontImage || !backImage) {
+    if (!id || !name || !price || !description || !frontImage) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -80,21 +80,24 @@ export async function POST(request: Request) {
       ).end(frontBuffer)
     })
 
-    // Upload back image to Cloudinary
-    const backBuffer = Buffer.from(await backImage.arrayBuffer())
-    const backUpload = await new Promise<CloudinaryUploadResponse>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: 'shirt-designs',
-          public_id: `design-${id}-back`,
-          resource_type: 'auto',
-        },
-        (error, result) => {
-          if (error) reject(error)
-          else resolve(result as CloudinaryUploadResponse)
-        }
-      ).end(backBuffer)
-    })
+    // Upload back image to Cloudinary (optional)
+    let backUpload: CloudinaryUploadResponse | null = null
+    if (backImage) {
+      const backBuffer = Buffer.from(await backImage.arrayBuffer())
+      backUpload = await new Promise<CloudinaryUploadResponse>((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            folder: 'shirt-designs',
+            public_id: `design-${id}-back`,
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            if (error) reject(error)
+            else resolve(result as CloudinaryUploadResponse)
+          }
+        ).end(backBuffer)
+      })
+    }
 
     // Create design in Supabase
     const { data: design, error: designError } = await supabase
@@ -105,7 +108,7 @@ export async function POST(request: Request) {
         price,
         description,
         front_image: frontUpload.secure_url,
-        back_image: backUpload.secure_url,
+        back_image: backUpload?.secure_url || null,
         is_active: true,
         display_order: displayOrder
       })
