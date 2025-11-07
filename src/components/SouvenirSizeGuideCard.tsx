@@ -6,8 +6,8 @@ export default function SouvenirSizeGuideCard() {
   return (
     <Card className="w-full mb-8">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">ตารางขนาดเสื้อที่ระลึก
-        <p className="text-sm text-red-500">* ขนาดเสื้อ Jersey และเสื้อที่ระลึกจะไม่เหมือนกัน</p>
+        <CardTitle className="text-lg font-semibold" style={{ fontSize: '80%' }}>ตารางขนาดเสื้อที่ระลึก
+        <p className="text-sm text-red-500" style={{ fontSize: '80%' }}>* ขนาดเสื้อ Jersey และเสื้อที่ระลึกจะไม่เหมือนกัน</p>
         </CardTitle>
       </CardHeader>
       <CardContent>
