@@ -27,7 +27,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { SIZES } from "@/constants/shirt-designs";
 import SizeGuideCard from "@/components/SizeGuideCard";
-import SouvenirSizeGuideCard from "@/components/SouvenirSizeGuideCard";
 import type { OrderItem, DBOrderItem, CustomerInfo, ShirtDesign } from "@/types/order";
 import ShirtDesignCard from "@/components/ShirtDesignCard";
 import { createObjectURL, revokeObjectURL } from "@/lib/image-helpers";
@@ -336,7 +335,6 @@ export default function ShirtOrderForm() {
 
             {/* Size Guides */}
             <SizeGuideCard />
-            <SouvenirSizeGuideCard />
 
             {/* Order Items */}
             <div className="space-y-4">
