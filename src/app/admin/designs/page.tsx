@@ -209,23 +209,37 @@ export default function AdminDesignsPage() {
                 <div>
                   <p className="text-xs text-gray-500 mb-1">ด้านหน้า</p>
                   <div className="relative h-32 bg-gray-100 rounded">
-                    <Image
-                      src={design.front_image}
-                      alt={`${design.name} - ด้านหน้า`}
-                      fill
-                      className="object-contain"
-                    />
+                    {design.front_image ? (
+                      <Image
+                        src={design.front_image}
+                        alt={`${design.name} - ด้านหน้า`}
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                        ไม่มีรูปภาพ
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 mb-1">ด้านหลัง</p>
                   <div className="relative h-32 bg-gray-100 rounded">
-                    <Image
-                      src={design.back_image}
-                      alt={`${design.name} - ด้านหลัง`}
-                      fill
-                      className="object-contain"
-                    />
+                    {design.back_image ? (
+                      <Image
+                        src={design.back_image}
+                        alt={`${design.name} - ด้านหลัง`}
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                        ไม่มีรูปภาพ
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

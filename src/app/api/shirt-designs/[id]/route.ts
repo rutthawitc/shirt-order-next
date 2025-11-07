@@ -7,13 +7,14 @@ import { CloudinaryUploadResponse } from '@/types/cloudinary'
 // GET - Fetch single shirt design
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const { data: design, error } = await supabase
       .from('shirt_designs')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) throw error
@@ -38,9 +39,10 @@ export async function GET(
 // PUT - Update shirt design (admin only)
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const formData = await request.formData()
     const name = formData.get('name') as string
     const price = formData.get('price') ? parseFloat(formData.get('price') as string) : null
@@ -54,7 +56,7 @@ export async function PUT(
     const { data: currentDesign } = await supabase
       .from('shirt_designs')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (!currentDesign) {
@@ -74,7 +76,7 @@ export async function PUT(
         cloudinary.uploader.upload_stream(
           {
             folder: 'shirt-designs',
-            public_id: `design-${params.id}-front`,
+            public_id: `design-${id}-front`,
             resource_type: 'auto',
             overwrite: true,
           },
@@ -94,7 +96,7 @@ export async function PUT(
         cloudinary.uploader.upload_stream(
           {
             folder: 'shirt-designs',
-            public_id: `design-${params.id}-back`,
+            public_id: `design-${id}-back`,
             resource_type: 'auto',
             overwrite: true,
           },
@@ -122,7 +124,7 @@ export async function PUT(
     const { data: design, error: designError } = await supabase
       .from('shirt_designs')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -144,14 +146,15 @@ export async function PUT(
 // DELETE - Delete shirt design (admin only)
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // Soft delete by setting is_active to false
     const { error } = await supabase
       .from('shirt_designs')
       .update({ is_active: false })
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) throw error
 
