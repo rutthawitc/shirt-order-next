@@ -81,6 +81,11 @@ export default function PrintShippingLabels() {
             padding: 0 !important;
           }
 
+          /* Hide navigation and non-printable elements */
+          nav {
+            display: none !important;
+          }
+
           .no-print {
             display: none !important;
           }
