@@ -227,6 +227,21 @@ ORDER BY created_at DESC;
 - Check that your IP is allowed in Supabase settings
 - Ensure your Supabase project is active
 
+### Issue: "violates check constraint valid_design" Error
+If you see an error like `violates check constraint "valid_design"` when creating orders:
+
+1. **Cause**: The `shirt_designs` table contains designs with invalid IDs (e.g., '001', '002') that don't match the constraint `design IN ('1', '2', '3', '4')`
+2. **Fix**: Run the migration in `fix-shirt-design-ids.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `fix-shirt-design-ids.sql`
+   - Click Run
+3. **Verify**: After running the migration, check that only designs with valid IDs exist:
+   ```sql
+   SELECT id, name, price FROM shirt_designs;
+   ```
+   Should show only designs with IDs: '1', '2', '3', '4'
+
 ## Migration Notes
 
 This schema replaces the previous setup that may have used:
