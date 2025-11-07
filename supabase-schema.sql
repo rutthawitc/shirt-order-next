@@ -9,6 +9,7 @@
 CREATE TABLE IF NOT EXISTS orders (
   id BIGSERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
   address TEXT,
   is_pickup BOOLEAN NOT NULL DEFAULT false,
   total_price DECIMAL(10, 2) NOT NULL CHECK (total_price >= 0),

@@ -54,6 +54,7 @@ Stores customer order information.
 |--------|------|-------------|
 | id | BIGSERIAL | Primary key (auto-increment) |
 | name | VARCHAR(255) | Customer name |
+| phone | VARCHAR(20) | Customer phone number |
 | address | TEXT | Delivery address (required if not pickup) |
 | is_pickup | BOOLEAN | Whether customer will pickup at event |
 | total_price | DECIMAL(10,2) | Total order amount in THB |
@@ -252,6 +253,17 @@ If you see this error when creating shirt designs:
    - Copy the contents of `update-back-image-nullable.sql`
    - Click Run
 3. **Why**: This allows creating shirt designs with only a front image, supporting single-sided designs or designs where the back image isn't ready yet
+
+### Issue: Missing phone column in orders table
+If you see an error about a missing `phone` column when submitting orders:
+
+1. **Cause**: The `orders` table doesn't have a phone column for storing customer phone numbers
+2. **Fix**: Run the migration in `add-phone-column.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `add-phone-column.sql`
+   - Click Run
+3. **Note**: For new Supabase projects, use the latest `supabase-schema.sql` which includes the phone column by default
 
 ## Migration Notes
 
