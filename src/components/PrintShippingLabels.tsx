@@ -34,16 +34,6 @@ export default function PrintShippingLabels() {
     return design?.name || 'ไม่ระบุ'
   }
 
-  const getStatusLabel = (status: string): string => {
-    const statusLabels: Record<string, string> = {
-      'pending': 'รอตรวจสอบ',
-      'confirmed': 'ยืนยันการชำระเงิน',
-      'processing': 'กำลังจัดส่ง',
-      'completed': 'จัดส่งแล้ว',
-      'cancelled': 'ยกเลิก'
-    }
-    return statusLabels[status] || status
-  }
 
   // Auto-print when loaded
   useEffect(() => {
@@ -176,10 +166,6 @@ export default function PrintShippingLabels() {
                       minute: '2-digit'
                     })}
                   </p>
-                </div>
-                <div>
-                  <span className="font-semibold">สถานะ:</span>
-                  <p className="ml-2 font-medium">{getStatusLabel(order.status)}</p>
                 </div>
                 <div>
                   <span className="font-semibold">ยอดรวม:</span>
