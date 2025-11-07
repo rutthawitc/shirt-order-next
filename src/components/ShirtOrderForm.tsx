@@ -31,6 +31,9 @@ import type { OrderItem, DBOrderItem, CustomerInfo, ShirtDesign } from "@/types/
 import ShirtDesignCard from "@/components/ShirtDesignCard";
 import { createObjectURL, revokeObjectURL } from "@/lib/image-helpers";
 
+const SHIPPING_COST = 50; // บาท
+const SHIPPING_PROVIDER = "J&T";
+
 export default function ShirtOrderForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -439,11 +442,11 @@ export default function ShirtOrderForm() {
 
             {/* Total Price */}
             <div className="text-right space-y-2">
-              <div className="text-sm text-red-500 font-semibold">
-                ฟรีค่าจัดส่ง
+              <div className="text-sm text-gray-600">
+                ค่าจัดส่ง {SHIPPING_COST} บาท (จัดส่งโดย {SHIPPING_PROVIDER})
               </div>
               <div className="text-xl font-semibold">
-                ราคารวมทั้งสิ้น: {calculateTotalPrice().toLocaleString()} บาท
+                ราคารวมทั้งสิ้น: {(calculateTotalPrice() + SHIPPING_COST).toLocaleString()} บาท
               </div>
             </div>
 
