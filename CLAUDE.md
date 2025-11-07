@@ -123,6 +123,84 @@ order_items (child)
 
 Database setup guide: [DATABASE_SETUP.md](DATABASE_SETUP.md)
 
+### 8. Combo Products System
+The application supports **combo products** - bundled shirt designs that are sold together but tracked individually for inventory purposes.
+
+#### How It Works
+When a customer orders a combo product (e.g., Design #3 - Combo Pack), the system:
+1. Shows and charges for the combo as a single product
+2. Stores the order with the combo design ID in the database
+3. Automatically splits the combo into component products during export/reporting
+
+**Example**: Design #3 (เสื้อแขนสั้น +เสื้อแขนยาว แพคคู่) splits into:
+- 1x Design #1 (Long sleeve work shirt)
+- 1x Design #2 (Short sleeve work shirt)
+
+#### Database Schema
+
+```
+shirt_designs
+  ├── is_combo (BOOLEAN) - Flag indicating if design is a combo product
+
+shirt_combo_components (new table)
+  ├── combo_design_id (VARCHAR FK → shirt_designs.id)
+  ├── component_design_id (VARCHAR FK → shirt_designs.id)
+  └── quantity_multiplier (INT) - How many of this component per combo
+```
+
+**Migration file**: [add-combo-products.sql](add-combo-products.sql)
+
+#### Key Files
+- [src/lib/combo-products.ts](src/lib/combo-products.ts) - Utility functions for fetching and processing combo relationships
+- [src/app/api/orders/export/route.ts](src/app/api/orders/export/route.ts) - Export logic that splits combos into components
+- [src/types/order.ts](src/types/order.ts) - TypeScript interfaces (ComboComponent, DBShirtDesign with is_combo)
+
+#### Utility Functions
+
+```typescript
+// Fetch all combo relationships from database
+const comboMap = await getComboRelationships()
+// Returns: Map { '3' => [{ component: '1', multiplier: 1 }, { component: '2', multiplier: 1 }] }
+
+// Check if a design is a combo
+const isCombo = await isComboProduct('3')  // Returns: true
+
+// Get components for a specific combo
+const components = await getComboComponents('3')
+// Returns: [{ component: '1', multiplier: 1 }, { component: '2', multiplier: 1 }]
+
+// Expand combo items for inventory reporting
+const expanded = await expandComboItems(orderItems)
+```
+
+#### Adding New Combo Products
+
+1. **Insert combo relationship in database** (via Supabase SQL Editor):
+   ```sql
+   -- Mark the design as a combo
+   UPDATE shirt_designs SET is_combo = TRUE WHERE id = '5';
+
+   -- Define the components
+   INSERT INTO shirt_combo_components (combo_design_id, component_design_id, quantity_multiplier)
+   VALUES
+     ('5', '1', 2),  -- Combo #5 includes 2x Design #1
+     ('5', '4', 1);  -- Combo #5 includes 1x Design #4
+   ```
+
+2. **No code changes needed** - The export and reporting logic automatically picks up the new combo from the database.
+
+#### Important Notes
+- **Combo products are filtered out** of the size summary sheet in Excel exports - only component designs appear
+- **Quantity multipliers** allow flexible combos (e.g., 2x Design 1 + 1x Design 2)
+- **Foreign key constraints** ensure data integrity - components must reference valid designs
+- **Cascade deletion** - If a design is deleted, related combo components are automatically removed
+- **Graceful degradation** - If combo fetch fails, the system continues without combo splitting
+
+#### Design Decisions
+- **Database-driven configuration**: No code changes needed for new combos (previously hardcoded)
+- **Split at export time**: Combos remain as single items in orders table for customer clarity
+- **Component-only inventory**: Excel size summary shows only components, not combo products
+
 ## Key Technical Patterns
 
 ### Environment Configuration
