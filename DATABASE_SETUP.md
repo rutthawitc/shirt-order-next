@@ -242,6 +242,17 @@ If you see an error like `violates check constraint "valid_design"` when creatin
    ```
    Should show only designs with IDs: '1', '2', '3', '4'
 
+### Issue: "null value in column back_image violates not-null constraint" Error
+If you see this error when creating shirt designs:
+
+1. **Cause**: The `shirt_designs` table was created with `back_image` as `NOT NULL`, but the back image is now optional
+2. **Fix**: Run the migration in `update-back-image-nullable.sql`:
+   - Go to Supabase SQL Editor
+   - Create a new query
+   - Copy the contents of `update-back-image-nullable.sql`
+   - Click Run
+3. **Why**: This allows creating shirt designs with only a front image, supporting single-sided designs or designs where the back image isn't ready yet
+
 ## Migration Notes
 
 This schema replaces the previous setup that may have used:

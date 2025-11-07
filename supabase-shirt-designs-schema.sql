@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS shirt_designs (
   price DECIMAL(10,2) NOT NULL,
   description TEXT NOT NULL,
   front_image TEXT NOT NULL, -- Cloudinary URL
-  back_image TEXT NOT NULL,  -- Cloudinary URL
+  back_image TEXT,            -- Cloudinary URL (nullable - back image is optional)
   is_active BOOLEAN DEFAULT true,
   display_order INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
