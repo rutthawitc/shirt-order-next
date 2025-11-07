@@ -1,22 +1,6 @@
 // src/components/SizeGuideCard.tsx
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-
-interface SizeInfo {
-  code: string
-  chest: string
-}
-
-const SIZES: SizeInfo[] = [
-  { code: 'S', chest: '36"' },
-  { code: 'M', chest: '38"' },
-  { code: 'L', chest: '40"' },
-  { code: 'XL', chest: '42"' },
-  { code: '2XL', chest: '44"' },
-  { code: '3XL', chest: '46"' },
-  { code: '4XL', chest: '48"' },
-  { code: '5XL', chest: '50"' },
-  { code: '6XL', chest: '52"' }
-]
+import Image from "next/image"
 
 export default function SizeGuideCard() {
   return (
@@ -27,26 +11,14 @@ export default function SizeGuideCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-2">ไซส์</th>
-                <th className="text-left p-2">รอบอก</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SIZES.map((size) => (
-                <tr key={size.code} className="hover:bg-gray-50">
-                  <td className="p-2 border">{size.code}</td>
-                  <td className="p-2 border">{size.chest}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="text-sm text-gray-500 mt-4">
-            * ขนาดรอบอกวัดจากจุดกว้างที่สุดของเสื้อ เมื่อวางราบ x 2
-          </p>
+        <div className="flex justify-center">
+          <Image
+            src="https://res.cloudinary.com/dbkdy9jfe/image/upload/v1762538109/IMG_1195_w0p5up.jpg"
+            alt="ตารางขนาดเสื้อ"
+            width={800}
+            height={600}
+            className="w-full h-auto max-w-2xl rounded-lg"
+          />
         </div>
       </CardContent>
     </Card>
