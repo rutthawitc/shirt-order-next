@@ -303,14 +303,12 @@ export default function ShirtOrderForm() {
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-gray-900">ระบบสั่งจองเสื้อ</h1>
         <h2 className="text-xl font-semibold text-gray-700">
-          Tiger Thailand Meeting 2025
+          Tiger Thailand Meeting 2026
         </h2>
         <div className="space-y-2">
-          <p className="text-red-600 font-medium">
-            ** เสื้อสำหรับใส่เข้างาน คือ แบบที่ 1 และ แบบที่ 2 เท่านั้น **
-          </p>
+          <p className="text-green-600 font-medium">ณ เมืองคอง</p>
           <p className="text-orange-600 font-medium">
-            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 มกราคม 2568 **
+            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 มกราคม 2569 **
           </p>
         </div>
         <p className="text-gray-600">เลือกแบบและขนาดตามที่ต้องการ</p>
@@ -319,7 +317,7 @@ export default function ShirtOrderForm() {
       {/* Rest of the form */}
       <Card>
         <CardHeader>
-          <CardTitle>สั่งจองเสื้อ</CardTitle>
+          <CardTitle></CardTitle>
         </CardHeader>
         <CardContent>
           {error && (

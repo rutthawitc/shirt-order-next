@@ -12,8 +12,8 @@ const notoSansThai = Noto_Sans_Thai({
 })
 
 export const metadata: Metadata = {
-  title: "ระบบสั่งจองเสื้อ - Tiger Thailand Meeting 2025",
-  description: "ระบบสั่งจองเสื้อสำหรับงาน Tiger Thailand Meeting 2025",
+  title: "ระบบสั่งจองเสื้อ - Tiger Thailand Meeting 2026",
+  description: "ระบบสั่งจองเสื้อสำหรับงาน Tiger Thailand Meeting 2026",
 }
 
 export default function RootLayout({
