@@ -20,10 +20,21 @@ export async function GET() {
 
     if (itemsError) throw itemsError;
 
+    // Fetch shirt designs from database
+    const { data: designs, error: designsError } = await supabase
+      .from('shirt_designs')
+      .select('id, name');
+
+    if (designsError) throw designsError;
+
+    // Create design name mapping from database
+    const designNameMap = new Map(designs.map(d => [d.id, d.name]));
+
     // Format orders for Excel
     const ordersForExcel = orders.map(order => ({
       'รหัสออเดอร์': order.id,
       'ชื่อผู้สั่ง': order.name,
+      'เบอร์โทรศัพท์': order.phone || '-',
       'ที่อยู่': order.is_pickup ? 'รับหน้างาน' : order.address,
       'ยอดรวม': order.total_price,
       'สถานะ': order.status === 'pending' ? 'รอดำเนินการ' : 'จัดส่งแล้ว',
@@ -32,7 +43,7 @@ export async function GET() {
 
     const itemsForExcel = items.map(item => ({
       'รหัสออเดอร์': item.order_id,
-      'แบบ': getDesignName(item.design),
+      'แบบ': designNameMap.get(item.design) || 'ไม่ระบุ',
       'ขนาด': item.size,
       'จำนวน': item.quantity,
       'ราคาต่อชิ้น': item.price_per_unit,
@@ -44,10 +55,12 @@ export async function GET() {
       const sizeCount = new Map<string, { [key: string]: number }>();
       const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
 
-      // Initialize the map with designs and zero quantities
-      ['1', '2', '4'].forEach(design => {
-        sizeCount.set(design, Object.fromEntries(sizes.map(size => [size, 0])));
-      });
+      // Initialize the map with all available designs from database
+      if (designs) {
+        designs.forEach(design => {
+          sizeCount.set(design.id, Object.fromEntries(sizes.map(size => [size, 0])));
+        });
+      }
 
       items.forEach(item => {
         const design = item.design;
@@ -72,7 +85,7 @@ export async function GET() {
 
       // Convert to array format for Excel
       const sizeSummary = Array.from(sizeCount.entries()).map(([design, sizeData]) => ({
-        'แบบเสื้อ': getDesignName(design),
+        'แบบเสื้อ': designNameMap.get(design) || 'ไม่ระบุ',
         ...sizeData
       }));
 
@@ -140,13 +153,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
-
-function getDesignName(designId: string): string {
-  return {
-    '1': 'แบบที่ 1 เสื้อใส่เข้างาน แขนยาว',
-    '2': 'แบบที่ 2 เสื้อใส่เข้างาน แขนสั้น',
-    '3': 'แบบที่ 3 เสื้อแพคคู่',
-    '4': 'แบบที่ 4 เสื้อที่ระลึก'
-  }[designId] || 'ไม่ระบุ';
 }
