@@ -38,6 +38,7 @@ export interface DBOrderItem extends BaseOrderItem {
 
 export interface CustomerInfo {
   name: string;
+  phone: string;
   address: string;
   slipImage: File | null;
   isPickup: boolean;

@@ -65,6 +65,7 @@ export default function ShirtOrderForm() {
 
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: "",
+    phone: "",
     address: "",
     slipImage: null,
     isPickup: false,
@@ -204,6 +205,10 @@ export default function ShirtOrderForm() {
       setError("กรุณากรอกชื่อ-นามสกุล");
       return false;
     }
+    if (!customerInfo.phone.trim()) {
+      setError("กรุณากรอกเบอร์โทรศัพท์");
+      return false;
+    }
     if (!customerInfo.isPickup && !customerInfo.address.trim()) {
       setError("กรุณากรอกที่อยู่จัดส่ง");
       return false;
@@ -239,6 +244,7 @@ export default function ShirtOrderForm() {
 
       const formData = new FormData();
       formData.append("name", customerInfo.name);
+      formData.append("phone", customerInfo.phone);
       formData.append("address", customerInfo.address);
       formData.append("isPickup", customerInfo.isPickup.toString());
       formData.append("items", JSON.stringify(itemsForSubmission));
@@ -272,6 +278,7 @@ export default function ShirtOrderForm() {
 
       setCustomerInfo({
         name: "",
+        phone: "",
         address: "",
         slipImage: null,
         isPickup: false,
@@ -453,9 +460,9 @@ export default function ShirtOrderForm() {
             {/* Bank Account Info */}
             <div className="bg-gray-100 p-4 rounded-md">
               <p className="font-semibold mb-2">ข้อมูลบัญชีสำหรับโอนเงิน</p>
-              <p>ชื่อบัญชี: นายกิตติพิชญ์ อึงสถิตถาวร</p>
-              <p>เลขที่บัญชี: 405-0-77689-8</p>
-              <p>ธนาคาร: ธนาคารกรุงไทย</p>
+              <p>ชื่อบัญชี: ธรรมนูญ ธรรมรัตน์</p>
+              <p>เลขที่บัญชี: 016-2-79741-7</p>
+              <p>ธนาคาร: ธนาคารกสิกรไทย</p>
             </div>
 
             {/* Customer Info */}
@@ -491,7 +498,21 @@ export default function ShirtOrderForm() {
 
               <div>
                 <label className="block mb-2">
-                  ที่อยู่จัดส่ง + เบอร์โทร{" "}
+                  เบอร์โทรศัพท์ <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={customerInfo.phone}
+                  onChange={(e) =>
+                    handleCustomerInfoChange("phone", e.target.value)
+                  }
+                  placeholder="กรอกเบอร์โทรศัพท์ (เช่น 08X-XXX-XXXX)"
+                  type="tel"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2">
+                  ที่อยู่จัดส่ง{" "}
                   {!customerInfo.isPickup && (
                     <span className="text-sm text-red-500">(จำเป็น)</span>
                   )}
