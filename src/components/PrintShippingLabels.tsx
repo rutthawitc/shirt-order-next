@@ -34,7 +34,6 @@ export default function PrintShippingLabels() {
     return design?.name || 'ไม่ระบุ'
   }
 
-
   // Auto-print when loaded
   useEffect(() => {
     if (orders.length > 0 && designs.length > 0) {
@@ -53,6 +52,12 @@ export default function PrintShippingLabels() {
     )
   }
 
+  // Group orders into pages of 3
+  const groupedOrders: Order[][] = []
+  for (let i = 0; i < orders.length; i += 3) {
+    groupedOrders.push(orders.slice(i, i + 3))
+  }
+
   return (
     <div className="print-container">
       <style jsx global>{`
@@ -60,6 +65,7 @@ export default function PrintShippingLabels() {
           * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
           }
 
           body {
@@ -70,10 +76,8 @@ export default function PrintShippingLabels() {
           }
 
           @page {
-            size: A4;
-            margin: 1cm;
-            margin-top: 0;
-            margin-bottom: 0;
+            size: A4 portrait;
+            margin: 0.5cm;
           }
 
           html, body {
@@ -99,6 +103,25 @@ export default function PrintShippingLabels() {
             margin: 0;
             padding: 0;
           }
+
+          .label-page {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 277mm; /* A4 height minus margins */
+          }
+
+          .shipping-label {
+            height: 92mm; /* Approximately 1/3 of A4 */
+            border: 2px solid #000;
+            padding: 8px;
+            margin-bottom: 2mm;
+            page-break-inside: avoid;
+          }
+
+          .shipping-label:last-child {
+            margin-bottom: 0;
+          }
         }
 
         @media screen {
@@ -108,12 +131,22 @@ export default function PrintShippingLabels() {
             padding: 20px;
             background: white;
           }
+
+          .label-page {
+            margin-bottom: 20px;
+          }
+
+          .shipping-label {
+            border: 2px solid #000;
+            padding: 12px;
+            margin-bottom: 10px;
+          }
         }
       `}</style>
 
       <div className="no-print mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
         <p className="text-blue-800 font-medium">
-          กำลังเตรียมพิมพ์ {orders.length} รายการ
+          กำลังเตรียมพิมพ์ {orders.length} รายการ ({groupedOrders.length} หน้า, 3 ป้ายต่อหน้า)
         </p>
         <p className="text-sm text-blue-600 mt-1">
           หน้าต่างพิมพ์จะเปิดโดยอัตโนมัติ หรือกด Ctrl+P เพื่อพิมพ์
@@ -123,137 +156,101 @@ export default function PrintShippingLabels() {
         </p>
       </div>
 
-      {orders.map((order, index) => (
+      {groupedOrders.map((pageOrders, pageIndex) => (
         <div
-          key={order.id}
-          className={`shipping-label border-2 border-gray-800 p-6 mb-4 ${
-            index < orders.length - 1 ? 'page-break' : ''
-          }`}
+          key={`page-${pageIndex}`}
+          className={`label-page ${pageIndex < groupedOrders.length - 1 ? 'page-break' : ''}`}
         >
-          <div className="text-center mb-4 pb-4 border-b-2 border-gray-300" style={{ transform: 'scale(0.8)', transformOrigin: 'center top' }}>
-            <h1 className="text-2xl font-bold">ใบปะหน้าพัสดุ</h1>
-            <p className="text-lg mt-1">Tiger Thailand Meeting 2026</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6 mb-6">
-            <div>
-              <h2 className="text-lg font-bold mb-3 bg-gray-200 p-2">
-                ข้อมูลผู้รับ
-              </h2>
-              <div className="space-y-2">
-                <div>
-                  <span className="font-semibold">ชื่อ:</span>
-                  <p className="text-xl ml-2">{order.name}</p>
-                </div>
-                <div>
-                  <span className="font-semibold">เบอร์โทร:</span>
-                  <p className="text-xl ml-2">{order.phone || '-'}</p>
-                </div>
-                <div>
-                  <span className="font-semibold">วิธีรับ:</span>
-                  <p className="text-lg ml-2">
-                    {order.is_pickup ? (
-                      <span className="font-bold text-green-700">รับหน้างาน</span>
-                    ) : (
-                      <span className="font-bold text-blue-700">จัดส่ง</span>
-                    )}
-                  </p>
-                </div>
-                {!order.is_pickup && order.address && (
-                  <div>
-                    <span className="font-semibold">ที่อยู่จัดส่ง:</span>
-                    <p className="text-base ml-2 mt-1 p-3 border border-gray-300 bg-gray-50 rounded">
-                      {order.address}
-                    </p>
-                  </div>
-                )}
+          {pageOrders.map((order) => (
+            <div key={order.id} className="shipping-label">
+              {/* Header */}
+              <div className="text-center mb-2 pb-2 border-b border-gray-400">
+                <h1 className="text-sm font-bold">ใบปะหน้าพัสดุ - Tiger Thailand Meeting 2026</h1>
               </div>
-            </div>
 
-            <div>
-              <h2 className="text-lg font-bold mb-3 bg-gray-200 p-2">
-                ข้อมูลคำสั่งซื้อ
-              </h2>
-              <div className="space-y-2">
-                <div>
+              {/* Main Content - Single Column for compact layout */}
+              <div className="space-y-2 text-xs">
+                {/* Order Number */}
+                <div className="flex items-center justify-between bg-gray-100 p-1">
                   <span className="font-semibold">เลขที่:</span>
-                  <p className="text-2xl font-bold ml-2">#{order.id}</p>
+                  <span className="text-lg font-bold">#{order.id}</span>
                 </div>
-                <div>
-                  <span className="font-semibold">วันที่สั่ง:</span>
-                  <p className="ml-2">
+
+                {/* Recipient Info */}
+                <div className="border border-gray-300 p-2">
+                  <div className="font-bold mb-1">ผู้รับ:</div>
+                  <div className="ml-2 space-y-1">
+                    <div><span className="font-semibold">ชื่อ:</span> {order.name}</div>
+                    <div><span className="font-semibold">เบอร์:</span> {order.phone || '-'}</div>
+                    <div>
+                      <span className="font-semibold">วิธีรับ:</span>{' '}
+                      {order.is_pickup ? (
+                        <span className="font-bold text-green-700">รับหน้างาน</span>
+                      ) : (
+                        <span className="font-bold text-blue-700">จัดส่ง</span>
+                      )}
+                    </div>
+                    {!order.is_pickup && order.address && (
+                      <div className="mt-1 p-1 bg-yellow-50 border border-yellow-200">
+                        <div className="font-semibold">ที่อยู่:</div>
+                        <div className="text-xs">{order.address}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Order Items - Compact Table */}
+                <div className="border border-gray-300">
+                  <div className="bg-gray-100 p-1 font-bold text-xs">รายการสินค้า</div>
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="border border-gray-300 p-1 text-left text-xs">แบบ</th>
+                        <th className="border border-gray-300 p-1 text-center text-xs">ไซส์</th>
+                        <th className="border border-gray-300 p-1 text-center text-xs">จำนวน</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {order.items.map((item, idx) => (
+                        <tr key={idx}>
+                          <td className="border border-gray-300 p-1 text-xs">
+                            {getDesignName(item.design).replace('เสื้อใส่เข้างาน', '').trim()}
+                          </td>
+                          <td className="border border-gray-300 p-1 text-center font-bold">
+                            {item.size}
+                          </td>
+                          <td className="border border-gray-300 p-1 text-center">
+                            {item.quantity}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Total and Date */}
+                <div className="flex justify-between items-center bg-gray-100 p-1">
+                  <div className="text-xs">
                     {new Date(order.created_at).toLocaleDateString('th-TH', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit'
                     })}
-                  </p>
-                </div>
-                <div>
-                  <span className="font-semibold">ยอดรวม:</span>
-                  <p className="text-xl font-bold ml-2 text-green-700">
-                    {order.total_price.toLocaleString()} บาท
-                  </p>
+                  </div>
+                  <div className="font-bold text-green-700">
+                    รวม: {order.total_price.toLocaleString()} บาท
+                  </div>
                 </div>
               </div>
+
+              {/* Footer Note */}
+              <div className="mt-1 pt-1 border-t border-dashed border-gray-300">
+                <p className="text-xs text-gray-600 text-center">
+                  ** ตรวจสอบสินค้าก่อนรับ **
+                </p>
+              </div>
             </div>
-          </div>
-
-          <div className="mt-6">
-            <h2 className="text-lg font-bold mb-3 bg-gray-200 p-2">
-              รายการสินค้า
-            </h2>
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100 border-2 border-gray-400">
-                  <th className="border border-gray-400 p-2 text-left">แบบเสื้อ</th>
-                  <th className="border border-gray-400 p-2 text-center">ขนาด</th>
-                  <th className="border border-gray-400 p-2 text-center">จำนวน</th>
-                  <th className="border border-gray-400 p-2 text-right">ราคา/ชิ้น</th>
-                  <th className="border border-gray-400 p-2 text-right">รวม</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order.items.map((item, idx) => (
-                  <tr key={idx} className="border border-gray-400">
-                    <td className="border border-gray-400 p-2">
-                      {getDesignName(item.design)}
-                    </td>
-                    <td className="border border-gray-400 p-2 text-center font-bold">
-                      {item.size}
-                    </td>
-                    <td className="border border-gray-400 p-2 text-center">
-                      {item.quantity}
-                    </td>
-                    <td className="border border-gray-400 p-2 text-right">
-                      {item.price_per_unit.toLocaleString()}
-                    </td>
-                    <td className="border border-gray-400 p-2 text-right font-semibold">
-                      {(item.quantity * item.price_per_unit).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="bg-gray-100 font-bold">
-                  <td colSpan={4} className="border-2 border-gray-400 p-2 text-right">
-                    ยอดรวมทั้งสิ้น:
-                  </td>
-                  <td className="border-2 border-gray-400 p-2 text-right text-lg">
-                    {order.total_price.toLocaleString()} บาท
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          <div className="mt-6 pt-4 border-t-2 border-dashed border-gray-400">
-            <p className="text-sm text-gray-600 text-center">
-              ** กรุณาตรวจสอบสินค้าก่อนรับ หากมีปัญหาโปรดติดต่อทันที **
-            </p>
-          </div>
+          ))}
         </div>
       ))}
     </div>
