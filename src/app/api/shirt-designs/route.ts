@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       name: design.name,
       price: design.price,
       description: design.description,
-      images: [design.front_image, design.back_image]
+      images: [design.front_image, design.back_image].filter((img): img is string => img !== null && img !== '')
     }))
 
     return NextResponse.json(transformedDesigns)
