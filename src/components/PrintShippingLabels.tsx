@@ -58,6 +58,10 @@ export default function PrintShippingLabels() {
     groupedOrders.push(orders.slice(i, i + 3))
   }
 
+  console.log('Total orders:', orders.length)
+  console.log('Grouped orders:', groupedOrders.map((group, idx) => `Page ${idx + 1}: ${group.length} orders (IDs: ${group.map(o => o.id).join(', ')})`))
+  console.log('All order IDs:', orders.map(o => o.id))
+
   return (
     <div className="print-container">
       <style jsx global>{`
@@ -108,15 +112,18 @@ export default function PrintShippingLabels() {
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: 277mm; /* A4 height minus margins */
+            height: auto;
           }
 
           .shipping-label {
-            height: 92mm; /* Approximately 1/3 of A4 */
+            height: 90mm; /* Approximately 1/3 of A4 */
             border: 2px solid #000;
             padding: 8px;
-            margin-bottom: 2mm;
+            margin-bottom: 1mm;
             page-break-inside: avoid;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
           }
 
           .shipping-label:last-child {
@@ -169,7 +176,7 @@ export default function PrintShippingLabels() {
               </div>
 
               {/* Main Content - Single Column for compact layout */}
-              <div className="space-y-2 text-xs">
+              <div className="space-y-1 text-xs flex-1 overflow-hidden flex flex-col">
                 {/* Order Number */}
                 <div className="flex items-center justify-between bg-gray-100 p-1">
                   <span className="font-semibold">เลขที่:</span>
@@ -200,9 +207,9 @@ export default function PrintShippingLabels() {
                 </div>
 
                 {/* Order Items - Compact Table */}
-                <div className="border border-gray-300">
+                <div className="border border-gray-300 flex-1 overflow-hidden flex flex-col">
                   <div className="bg-gray-100 p-1 font-bold text-xs">รายการสินค้า</div>
-                  <table className="w-full text-xs">
+                  <table className="w-full text-xs flex-1">
                     <thead>
                       <tr className="bg-gray-50">
                         <th className="border border-gray-300 p-1 text-left text-xs">แบบ</th>

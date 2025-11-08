@@ -114,6 +114,7 @@ export default function AdminDashboard() {
     window.open('/admin/print-labels', '_blank')
   }
 
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
@@ -154,7 +155,7 @@ export default function AdminDashboard() {
             disabled={selectedOrderIds.length === 0}
           >
             <Printer className="h-4 w-4" />
-            พิมพ์รายการที่เลือก
+            พิมพ์ใบจัดส่ง
           </Button>
           <Button
             onClick={handleExport}
