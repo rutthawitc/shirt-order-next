@@ -72,7 +72,7 @@ export default function ImageLightbox({
           children
         ) : (
           <button
-            className="relative group cursor-pointer overflow-hidden rounded"
+            className={`relative group cursor-pointer overflow-hidden rounded ${fill ? 'w-full h-full' : ''}`}
             aria-label={`คลิกเพื่อดูภาพขยาย: ${alt}`}
           >
             {thumbnailImage}
