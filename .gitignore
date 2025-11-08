@@ -44,5 +44,11 @@ next-env.d.ts
 # windsurf rules
 .windsurfrules
 
-# Instructions 
+# Instructions
 Instructions.md
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Windows
+nul
