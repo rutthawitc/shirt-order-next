@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import ImageLightbox from '@/components/ImageLightbox'
 
 interface ImageCarouselProps {
   images: readonly string[]
@@ -20,7 +21,7 @@ export default function ImageCarousel({ images, alt, autoPlay = true }: ImageCar
     <div className="relative w-full bg-gray-100 rounded overflow-hidden">
       {/* Image Container */}
       <div className="relative aspect-[4/3] w-full">
-        <Image
+        <ImageLightbox
           src={images[current]}
           alt={`${alt} - image ${current + 1}`}
           fill

@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import { Card } from "@/components/ui/card"
 import ImageCarousel from '@/components/ImageCarousel'
+import ImageLightbox from '@/components/ImageLightbox'
 import type { ShirtDesign } from '@/types/order'
 
 interface ShirtDesignCardProps {
@@ -23,7 +24,7 @@ export default function ShirtDesignCard({ design }: ShirtDesignCardProps) {
         <div className="grid grid-cols-2 gap-2 p-2">
           {design.images.map((img, idx) => (
             <div key={idx} className="relative aspect-[4/3] w-full">
-              <Image
+              <ImageLightbox
                 src={img}
                 alt={`${design.name} - มุมที่ ${idx + 1}`}
                 fill
