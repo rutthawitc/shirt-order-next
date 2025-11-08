@@ -453,7 +453,7 @@ export default function ShirtOrderForm() {
               <div className="text-xl font-semibold">
                 ราคารวมทั้งสิ้น: {(calculateTotalPrice() + SHIPPING_COST).toLocaleString()} บาท
               </div>
-              <p className="text-md text-red-500">โอนเงินที่เข้าบัญชีด้านล่างเพื่ออัปโหลดสลิป ต่อไป</p>
+              <p className="text-sm text-red-500">โอนเงินที่เข้าบัญชีด้านล่างเพื่ออัปโหลดสลิป ต่อไป</p>
             </div>
 
             {/* Bank Account Info */}
