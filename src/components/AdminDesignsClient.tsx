@@ -145,7 +145,7 @@ export default function AdminDesignsClient() {
 
       setIsDialogOpen(false)
       // Small delay to ensure database update is committed
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise(resolve => setTimeout(resolve, 500))
       fetchDesigns()
     } catch (error) {
       console.error('Error saving design:', error)
@@ -205,7 +205,7 @@ export default function AdminDesignsClient() {
       })
 
       // Small delay to ensure database update is committed
-      await new Promise(resolve => setTimeout(resolve, 300))
+      await new Promise(resolve => setTimeout(resolve, 500))
       fetchDesigns()
     } catch (error) {
       console.error('Error reactivating design:', error)
