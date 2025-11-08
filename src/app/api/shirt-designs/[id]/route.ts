@@ -1,6 +1,6 @@
 // src/app/api/shirt-designs/[id]/route.ts
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { cloudinary } from '@/lib/cloudinary'
 import { CloudinaryUploadResponse } from '@/types/cloudinary'
 
@@ -123,7 +123,7 @@ export async function PUT(
 
     console.log('Updating design:', { id, updateData })
 
-    const { data: design, error: designError } = await supabase
+    const { data: design, error: designError } = await supabaseAdmin
       .from('shirt_designs')
       .update(updateData)
       .eq('id', id)
@@ -158,7 +158,7 @@ export async function DELETE(
   try {
     const { id } = await params
     // Soft delete by setting is_active to false
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('shirt_designs')
       .update({ is_active: false })
       .eq('id', id)

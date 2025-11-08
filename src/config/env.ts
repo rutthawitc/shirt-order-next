@@ -2,6 +2,7 @@
 export const env = {
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
     supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     cloudinaryName: process.env.CLOUDINARY_CLOUD_NAME!,
     cloudinaryKey: process.env.CLOUDINARY_API_KEY!,
     cloudinarySecret: process.env.CLOUDINARY_API_SECRET!,

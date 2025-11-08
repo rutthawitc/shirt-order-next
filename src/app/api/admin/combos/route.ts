@@ -1,6 +1,6 @@
 // src/app/api/admin/combos/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { cookies } from 'next/headers'
 
 /**
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Start a transaction: mark design as combo and insert components
     // First, mark the design as combo
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('shirt_designs')
       .update({ is_combo: true })
       .eq('id', comboId)
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     if (updateError) throw updateError
 
     // Delete existing components for this combo (if updating)
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from('shirt_combo_components')
       .delete()
       .eq('combo_design_id', comboId)
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       quantity_multiplier: comp.multiplier
     }))
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseAdmin
       .from('shirt_combo_components')
       .insert(componentsToInsert)
 
@@ -180,7 +180,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete all components for this combo
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabaseAdmin
       .from('shirt_combo_components')
       .delete()
       .eq('combo_design_id', comboId)
@@ -188,7 +188,7 @@ export async function DELETE(request: NextRequest) {
     if (deleteError) throw deleteError
 
     // Mark design as non-combo
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('shirt_designs')
       .update({ is_combo: false })
       .eq('id', comboId)

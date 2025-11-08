@@ -1,6 +1,6 @@
 // src/app/api/shirt-designs/route.ts
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { cloudinary } from '@/lib/cloudinary'
 import { CloudinaryUploadResponse } from '@/types/cloudinary'
 
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     }
 
     // Create design in Supabase
-    const { data: design, error: designError } = await supabase
+    const { data: design, error: designError } = await supabaseAdmin
       .from('shirt_designs')
       .insert({
         id,
