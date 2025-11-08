@@ -33,9 +33,11 @@ export default function AdminDesignsClient() {
   const fetchDesigns = useCallback(async () => {
     try {
       // Fetch all designs including inactive ones for admin
-      const response = await fetch('/api/shirt-designs?includeInactive=true')
+      // Add cache-busting query param to ensure fresh data
+      const response = await fetch(`/api/shirt-designs?includeInactive=true&t=${Date.now()}`)
       if (!response.ok) throw new Error('Failed to fetch designs')
       const data = await response.json()
+      console.log('Fetched designs:', data)
       setDesigns(data)
     } catch (error) {
       console.error('Error fetching designs:', error)
@@ -252,7 +254,7 @@ export default function AdminDesignsClient() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {designs.map((design) => (
+        {designs.map((design, index) => (
           <Card key={design.id} className={!design.is_active ? 'opacity-60 border-red-300' : ''}>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -275,6 +277,7 @@ export default function AdminDesignsClient() {
                         fill
                         className="object-contain"
                         unoptimized
+                        priority={index === 0}
                         onError={(e) => {
                           console.error('Failed to load image:', design.front_image)
                           e.currentTarget.style.display = 'none'
