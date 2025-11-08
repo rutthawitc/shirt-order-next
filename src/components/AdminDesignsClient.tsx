@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -30,11 +30,7 @@ export default function AdminDesignsClient() {
   const [frontImage, setFrontImage] = useState<File | null>(null)
   const [backImage, setBackImage] = useState<File | null>(null)
 
-  useEffect(() => {
-    fetchDesigns()
-  }, [])
-
-  const fetchDesigns = async () => {
+  const fetchDesigns = useCallback(async () => {
     try {
       // Fetch all designs including inactive ones for admin
       const response = await fetch('/api/shirt-designs?includeInactive=true')
@@ -51,7 +47,11 @@ export default function AdminDesignsClient() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchDesigns()
+  }, [fetchDesigns])
 
   const openCreateDialog = () => {
     setEditingDesign(null)

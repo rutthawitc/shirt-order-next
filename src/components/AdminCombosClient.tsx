@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -48,11 +48,7 @@ export default function AdminCombosClient() {
     { componentId: '', multiplier: 1 }
   ])
 
-  useEffect(() => {
-    fetchCombos()
-  }, [])
-
-  const fetchCombos = async () => {
+  const fetchCombos = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/combos')
       if (!response.ok) throw new Error('Failed to fetch combos')
@@ -69,7 +65,11 @@ export default function AdminCombosClient() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchCombos()
+  }, [fetchCombos])
 
   const openCreateDialog = () => {
     setSelectedComboId('')
