@@ -9,7 +9,14 @@
       "Bash(curl:*)",
       "Bash(git log:*)",
       "Bash(yarn add:*)",
-      "Bash(yarn build)"
+      "Bash(yarn build)",
+      "Bash(git branch:*)",
+      "Bash(git revert:*)",
+      "Bash(taskkill:*)",
+      "Bash(nul)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(wmic process where processid=13976 delete)"
     ],
     "deny": [],
     "ask": []
