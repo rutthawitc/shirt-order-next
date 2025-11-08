@@ -37,7 +37,6 @@ export default function AdminDesignsClient() {
       const response = await fetch(`/api/shirt-designs?includeInactive=true&t=${Date.now()}`)
       if (!response.ok) throw new Error('Failed to fetch designs')
       const data = await response.json()
-      console.log('Fetched designs:', data)
       setDesigns(data)
     } catch (error) {
       console.error('Error fetching designs:', error)
@@ -213,7 +212,6 @@ export default function AdminDesignsClient() {
       }
 
       const result = await response.json()
-      console.log('Reactivate response:', result)
 
       toast({
         title: 'สำเร็จ!',
