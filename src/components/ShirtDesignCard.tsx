@@ -21,7 +21,7 @@ export default function ShirtDesignCard({ design }: ShirtDesignCardProps) {
 
       {/* Desktop: Grid layout */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-2 gap-2 p-2">
+        <div className={`grid gap-2 p-2 ${design.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
           {design.images.map((img, idx) => (
             <div key={idx} className="relative aspect-[4/3] w-full">
               <ImageLightbox

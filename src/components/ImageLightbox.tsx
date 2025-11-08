@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 import { ZoomIn } from 'lucide-react'
 
 interface ImageLightboxProps {
@@ -84,14 +84,15 @@ export default function ImageLightbox({
           </button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 border-0">
+      <DialogContent className="w-[95vw] h-[95vh] max-w-none max-h-none p-0 border-0 md:w-auto md:h-auto md:max-w-[95vw] md:max-h-[95vh]">
+        <DialogTitle className="sr-only">{alt}</DialogTitle>
         <div className="relative w-full h-full flex items-center justify-center bg-black/90">
           <Image
             src={src}
             alt={alt}
             width={1920}
             height={1440}
-            className="w-auto h-auto max-w-full max-h-[95vh] object-contain"
+            className="w-full h-full md:w-auto md:h-auto md:max-w-full md:max-h-[95vh] object-contain"
             quality={90}
             unoptimized={unoptimized}
           />
