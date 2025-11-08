@@ -182,6 +182,8 @@ export default function AdminCombosClient() {
       })
 
       setIsDialogOpen(false)
+      // Small delay to ensure database update is committed
+      await new Promise(resolve => setTimeout(resolve, 300))
       fetchCombos()
     } catch (error) {
       console.error('Error saving combo:', error)
@@ -210,6 +212,8 @@ export default function AdminCombosClient() {
         description: 'ลบ Combo เรียบร้อยแล้ว'
       })
 
+      // Small delay to ensure database update is committed
+      await new Promise(resolve => setTimeout(resolve, 300))
       fetchCombos()
     } catch (error) {
       console.error('Error deleting combo:', error)
