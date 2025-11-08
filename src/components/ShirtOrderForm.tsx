@@ -308,7 +308,7 @@ export default function ShirtOrderForm() {
         <div className="space-y-2">
           <p className="text-green-600 font-medium">ณ เมืองคอง</p>
           <p className="text-orange-600 font-medium">
-            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 มกราคม 2569 **
+            ** สั่งได้ตั้งแต่วันนี้ จนถึง 10 ธันวาคม 2568 **
           </p>
         </div>
         <p className="text-gray-600">เลือกแบบและขนาดตามที่ต้องการ</p>
