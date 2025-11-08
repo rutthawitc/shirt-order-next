@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
-import { ZoomIn } from 'lucide-react'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogClose, DialogDescription } from '@/components/ui/dialog'
+import { ZoomIn, X } from 'lucide-react'
 
 interface ImageLightboxProps {
   src: string
@@ -86,6 +86,7 @@ export default function ImageLightbox({
       </DialogTrigger>
       <DialogContent className="w-[95vw] h-[95vh] max-w-none max-h-none p-0 border-0 md:w-auto md:h-auto md:max-w-[95vw] md:max-h-[95vh]">
         <DialogTitle className="sr-only">{alt}</DialogTitle>
+        <DialogDescription className="sr-only">Enlarged view of {alt}</DialogDescription>
         <div className="relative w-full h-full flex items-center justify-center bg-black/90">
           <Image
             src={src}
@@ -94,8 +95,14 @@ export default function ImageLightbox({
             height={1440}
             className="w-full h-full md:w-auto md:h-auto md:max-w-full md:max-h-[95vh] object-contain"
             quality={90}
+            loading="eager"
             unoptimized={unoptimized}
           />
+          {/* Custom close button with white color and larger size */}
+          <DialogClose className="absolute right-4 top-4 z-10 text-white hover:text-gray-300 transition-colors bg-transparent border-0 p-0">
+            <X className="w-8 h-8 md:w-6 md:h-6" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
         </div>
       </DialogContent>
     </Dialog>
