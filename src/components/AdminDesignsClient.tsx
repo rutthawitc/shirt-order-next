@@ -205,20 +205,27 @@ export default function AdminDesignsClient() {
         body: formData
       })
 
-      if (!response.ok) throw new Error('Failed to reactivate design')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to reactivate design')
+      }
+
+      const result = await response.json()
+      console.log('Reactivate response:', result)
 
       toast({
         title: 'สำเร็จ!',
         description: 'เปิดใช้งานแบบเสื้ออีกครั้งเรียบร้อยแล้ว'
       })
 
-      // Verify with fresh data in background (no await, don't block UI)
+      // Wait a moment then verify with fresh data in background
+      await new Promise(resolve => setTimeout(resolve, 200))
       fetchDesigns()
     } catch (error) {
       console.error('Error reactivating design:', error)
       toast({
         title: 'เกิดข้อผิดพลาด',
-        description: 'ไม่สามารถเปิดใช้งานแบบเสื้อได้',
+        description: error instanceof Error ? error.message : 'ไม่สามารถเปิดใช้งานแบบเสื้อได้',
         variant: 'destructive'
       })
       // Revert optimistic update on error

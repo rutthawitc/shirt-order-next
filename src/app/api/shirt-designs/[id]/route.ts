@@ -121,6 +121,8 @@ export async function PUT(
     if (description) updateData.description = description
     if (displayOrder !== null) updateData.display_order = displayOrder
 
+    console.log('Updating design:', { id, updateData })
+
     const { data: design, error: designError } = await supabase
       .from('shirt_designs')
       .update(updateData)
@@ -128,7 +130,12 @@ export async function PUT(
       .select()
       .single()
 
-    if (designError) throw designError
+    if (designError) {
+      console.error('Supabase update error:', designError)
+      throw designError
+    }
+
+    console.log('Design updated successfully:', design)
 
     return NextResponse.json({
       message: 'Shirt design updated successfully',
