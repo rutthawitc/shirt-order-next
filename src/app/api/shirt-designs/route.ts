@@ -21,6 +21,8 @@ export async function GET(request: Request) {
 
     if (error) throw error
 
+    console.log(`[GET /api/shirt-designs] includeInactive=${includeInactive}, designs=${designs?.length || 0}`, designs?.map(d => ({ id: d.id, is_active: d.is_active })))
+
     // For admin (includeInactive=true), return full DB format
     if (includeInactive) {
       return NextResponse.json(designs)
