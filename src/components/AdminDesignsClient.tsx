@@ -144,8 +144,7 @@ export default function AdminDesignsClient() {
       }
 
       setIsDialogOpen(false)
-      // Small delay to ensure database update is committed
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Verify with fresh data in background (no await, don't block UI)
       fetchDesigns()
     } catch (error) {
       console.error('Error saving design:', error)
@@ -163,6 +162,9 @@ export default function AdminDesignsClient() {
     if (!confirm('คุณแน่ใจหรือไม่ที่จะลบแบบเสื้อนี้?')) return
 
     try {
+      // Optimistic update: remove from UI immediately
+      setDesigns(prev => prev.map(d => d.id === id ? { ...d, is_active: false } : d))
+
       const response = await fetch(`/api/shirt-designs/${id}`, {
         method: 'DELETE'
       })
@@ -174,6 +176,7 @@ export default function AdminDesignsClient() {
         description: 'ลบแบบเสื้อเรียบร้อยแล้ว'
       })
 
+      // Verify with fresh data in background (no await, don't block UI)
       fetchDesigns()
     } catch (error) {
       console.error('Error deleting design:', error)
@@ -182,6 +185,8 @@ export default function AdminDesignsClient() {
         description: 'ไม่สามารถลบแบบเสื้อได้',
         variant: 'destructive'
       })
+      // Revert optimistic update on error
+      fetchDesigns()
     }
   }
 
@@ -189,6 +194,9 @@ export default function AdminDesignsClient() {
     if (!confirm('คุณต้องการเปิดใช้งานแบบเสื้อนี้อีกครั้งหรือไม่?')) return
 
     try {
+      // Optimistic update: update UI immediately
+      setDesigns(prev => prev.map(d => d.id === id ? { ...d, is_active: true } : d))
+
       const formData = new FormData()
       formData.append('isActive', 'true')
 
@@ -204,8 +212,7 @@ export default function AdminDesignsClient() {
         description: 'เปิดใช้งานแบบเสื้ออีกครั้งเรียบร้อยแล้ว'
       })
 
-      // Small delay to ensure database update is committed
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Verify with fresh data in background (no await, don't block UI)
       fetchDesigns()
     } catch (error) {
       console.error('Error reactivating design:', error)
@@ -214,6 +221,8 @@ export default function AdminDesignsClient() {
         description: 'ไม่สามารถเปิดใช้งานแบบเสื้อได้',
         variant: 'destructive'
       })
+      // Revert optimistic update on error
+      fetchDesigns()
     }
   }
 
