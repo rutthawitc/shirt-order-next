@@ -578,6 +578,7 @@ export default function ShirtOrderForm() {
                       src={previewImage}
                       alt="สลิปการโอนเงิน"
                       fill
+                      priority
                       className="object-contain rounded shadow"
                       sizes="(max-width: 768px) 100vw, 320px"
                     />
