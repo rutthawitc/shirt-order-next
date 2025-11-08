@@ -1,6 +1,7 @@
 // src/components/SouvenirSizeGuideCard.tsx
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import Image from "next/image"
+import ImageLightbox from "@/components/ImageLightbox"
 
 export default function SouvenirSizeGuideCard() {
   return (
@@ -12,7 +13,7 @@ export default function SouvenirSizeGuideCard() {
       </CardHeader>
       <CardContent>
         <div className="flex justify-center">
-          <Image
+          <ImageLightbox
             src="https://res.cloudinary.com/dbkdy9jfe/image/upload/v1762538109/IMG_1195_w0p5up.jpg"
             alt="ตารางขนาดเสื้อที่ระลึก"
             width={800}
