@@ -121,13 +121,70 @@ export default function PrintShippingLabels() {
             padding: 8px;
             margin-bottom: 1mm;
             page-break-inside: avoid;
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             flex-direction: column;
           }
 
           .shipping-label:last-child {
             margin-bottom: 0;
+          }
+
+          /* Fix main content container overflow */
+          .print-main-content {
+            overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+
+          /* Fix table container for print */
+          .print-table-container {
+            display: block !important;
+            overflow: visible !important;
+            flex: none !important;
+            height: auto !important;
+          }
+
+          /* Ensure table elements are visible in print */
+          .print-table {
+            display: table !important;
+            flex: none !important;
+            width: 100% !important;
+            height: auto !important;
+          }
+
+          .print-table thead {
+            display: table-header-group !important;
+          }
+
+          .print-table tbody {
+            display: table-row-group !important;
+          }
+
+          .print-table tr {
+            display: table-row !important;
+          }
+
+          .print-table td,
+          .print-table th {
+            display: table-cell !important;
+            visibility: visible !important;
+          }
+
+          /* Ensure total row is visible */
+          .print-total-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            visibility: visible !important;
+            padding: 2px 4px !important;
+            margin-top: 2px !important;
+          }
+
+          .print-total-row > div {
+            visibility: visible !important;
+            display: block !important;
+            padding: 1px !important;
           }
         }
 
@@ -176,7 +233,7 @@ export default function PrintShippingLabels() {
               </div>
 
               {/* Main Content - Single Column for compact layout */}
-              <div className="space-y-1 text-xs flex-1 overflow-hidden flex flex-col">
+              <div className="space-y-1 text-xs flex-1 overflow-hidden flex flex-col print-main-content">
                 {/* Order Number */}
                 <div className="flex items-center justify-between bg-gray-100 p-1">
                   <span className="font-semibold">เลขที่:</span>
@@ -207,9 +264,9 @@ export default function PrintShippingLabels() {
                 </div>
 
                 {/* Order Items - Compact Table */}
-                <div className="border border-gray-300 flex-1 overflow-hidden flex flex-col">
+                <div className="border border-gray-300 flex-1 overflow-hidden flex flex-col print-table-container">
                   <div className="bg-gray-100 p-1 font-bold text-xs">รายการสินค้า</div>
-                  <table className="w-full text-xs flex-1">
+                  <table className="w-full text-xs flex-1 print-table">
                     <thead>
                       <tr className="bg-gray-50">
                         <th className="border border-gray-300 p-1 text-left text-xs">แบบ</th>
@@ -236,7 +293,7 @@ export default function PrintShippingLabels() {
                 </div>
 
                 {/* Total and Date */}
-                <div className="flex justify-between items-center bg-gray-100 p-1">
+                <div className="flex justify-between items-center bg-gray-100 p-1 print-total-row">
                   <div className="text-xs">
                     {new Date(order.created_at).toLocaleDateString('th-TH', {
                       day: '2-digit',
@@ -248,13 +305,6 @@ export default function PrintShippingLabels() {
                     รวม: {order.total_price.toLocaleString()} บาท
                   </div>
                 </div>
-              </div>
-
-              {/* Footer Note */}
-              <div className="mt-1 pt-1 border-t border-dashed border-gray-300">
-                <p className="text-xs text-gray-600 text-center">
-                  ** ตรวจสอบสินค้าก่อนรับ **
-                </p>
               </div>
             </div>
           ))}
