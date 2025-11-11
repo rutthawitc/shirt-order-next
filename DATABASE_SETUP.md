@@ -90,7 +90,7 @@ Stores individual items in each order.
 - `'4'` - Souvenir shirt (500 THB)
 
 **Size Values:**
-- `S`, `M`, `L`, `XL`, `2XL`, `3XL`, `4XL`, `5XL`, `6XL`
+- `4S`, `SSS`, `SS`, `S`, `M`, `L`, `XL`, `2XL`, `3XL`, `4XL`, `5XL`, `6XL`
 
 ### Indexes
 

@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   -- Constraints
   CONSTRAINT valid_design CHECK (design IN ('1', '2', '3', '4')),
   CONSTRAINT valid_size CHECK (
-    size IN ('S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL')
+    size IN ('4S', 'SSS', 'SS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL')
   )
 );
 
@@ -150,15 +150,18 @@ FROM order_items
 GROUP BY design, size
 ORDER BY design,
   CASE size
-    WHEN 'S' THEN 1
-    WHEN 'M' THEN 2
-    WHEN 'L' THEN 3
-    WHEN 'XL' THEN 4
-    WHEN '2XL' THEN 5
-    WHEN '3XL' THEN 6
-    WHEN '4XL' THEN 7
-    WHEN '5XL' THEN 8
-    WHEN '6XL' THEN 9
+    WHEN '4S' THEN 1
+    WHEN 'SSS' THEN 2
+    WHEN 'SS' THEN 3
+    WHEN 'S' THEN 4
+    WHEN 'M' THEN 5
+    WHEN 'L' THEN 6
+    WHEN 'XL' THEN 7
+    WHEN '2XL' THEN 8
+    WHEN '3XL' THEN 9
+    WHEN '4XL' THEN 10
+    WHEN '5XL' THEN 11
+    WHEN '6XL' THEN 12
   END;
 
 -- ============================================

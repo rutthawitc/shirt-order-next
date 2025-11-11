@@ -10,7 +10,8 @@
  */
 
 import { DBOrderItem } from '@/types/order'
-import type { ComboMap, ComboComponentInfo } from '@/lib/combo-products';
+import type { ComboMap, ComboComponentInfo } from '@/lib/combo-products'
+import { ALL_SIZES } from '@/constants/shirt-designs';
 
 /**
  * Minimal shirt design interface needed for size summary processing
@@ -37,7 +38,7 @@ export interface SizeSummaryRow {
  * Features:
  * - Handles combo products by splitting into components
  * - Filters out combo products from final output (only shows components)
- * - Initializes all sizes (S-6XL) with zero for all designs
+ * - Initializes all sizes (4S-6XL including SSS, SS) with zero for all designs
  */
 export function processSizeSummary(
   items: DBOrderItem[],
@@ -45,7 +46,7 @@ export function processSizeSummary(
   comboMap: ComboMap
 ): SizeSummaryRow[] {
   const sizeCount = new Map<string, { [key: string]: number }>();
-  const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+  const sizes = ALL_SIZES as readonly string[];
 
   // Create design name mapping from database
   const designNameMap = new Map(designs.map(d => [d.id, d.name]));
@@ -100,7 +101,7 @@ export function processSizeSummary(
  * @returns Object with total counts per size
  */
 export function calculateSizeTotals(sizeSummary: SizeSummaryRow[]): { [key: string]: number } {
-  const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+  const sizes = ALL_SIZES as readonly string[];
   const totals: { [key: string]: number } = {};
 
   sizes.forEach(size => {
@@ -130,7 +131,7 @@ export function calculateGrandTotal(sizeSummary: SizeSummaryRow[]): number {
  * @returns Design name with highest total, or empty string if no data
  */
 export function getMostPopularDesign(sizeSummary: SizeSummaryRow[]): string {
-  const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
+  const sizes = ALL_SIZES as readonly string[];
   let maxDesign = '';
   let maxTotal = 0;
 

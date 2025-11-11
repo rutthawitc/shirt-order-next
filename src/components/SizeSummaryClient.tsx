@@ -5,6 +5,7 @@ import SizeSummaryTable from '@/components/SizeSummaryTable'
 import SizeSummaryStats from '@/components/SizeSummaryStats'
 import SizeSummaryFilters from '@/components/SizeSummaryFilters'
 import { processSizeSummary } from '@/lib/size-summary'
+import { ALL_SIZES } from '@/constants/shirt-designs'
 import type { SizeSummaryRow } from '@/lib/size-summary'
 import type { DBOrderItem } from '@/types/order'
 import type { ComboMap } from '@/lib/combo-products'
@@ -179,7 +180,7 @@ export default function SizeSummaryClient({
  * Helper function to calculate total for a design row
  */
 function calculateDesignTotal(row: SizeSummaryRow): number {
-  const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL']
+  const sizes = ALL_SIZES as readonly string[]
   return sizes.reduce((sum, size) => {
     const value = row[size] as number
     return sum + (typeof value === 'number' ? value : 0)

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ALL_SIZES } from '@/constants/shirt-designs'
 import type { SizeSummaryRow } from '@/lib/size-summary'
 
 interface SizeSummaryTableProps {
@@ -20,7 +21,7 @@ interface SizeSummaryTableProps {
  * Includes a totals row at the bottom
  */
 export default function SizeSummaryTable({ data }: SizeSummaryTableProps) {
-  const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL']
+  const sizes = ALL_SIZES as readonly string[]
 
   // Calculate totals for each size
   const totals = calculateTotals(data, sizes)

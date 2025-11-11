@@ -107,6 +107,43 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     console.error('Order creation error:', error)
+
+    // Handle specific Supabase errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const supabaseError = error as { code: string; message: string; details?: string }
+
+      // Check constraint violations
+      if (supabaseError.code === '23514') {
+        // Check constraint violation
+        if (supabaseError.message?.includes('valid_size')) {
+          return NextResponse.json(
+            { error: 'ขนาดเสื้อที่เลือกไม่ถูกต้อง กรุณาเลือกขนาดที่มีให้บริการ' },
+            { status: 400 }
+          )
+        }
+        if (supabaseError.message?.includes('valid_design')) {
+          return NextResponse.json(
+            { error: 'แบบเสื้อที่เลือกไม่ถูกต้อง กรุณาเลือกแบบเสื้อที่มีให้บริการ' },
+            { status: 400 }
+          )
+        }
+        if (supabaseError.message?.includes('address_required_for_delivery')) {
+          return NextResponse.json(
+            { error: 'กรุณากรอกที่อยู่จัดส่ง หรือเลือกรับหน้างาน' },
+            { status: 400 }
+          )
+        }
+      }
+
+      // Foreign key violations
+      if (supabaseError.code === '23503') {
+        return NextResponse.json(
+          { error: 'เกิดข้อผิดพลาดในการสร้างรายการสั่งซื้อ' },
+          { status: 400 }
+        )
+      }
+    }
+
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }

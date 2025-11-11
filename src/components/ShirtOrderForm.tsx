@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { SIZES } from "@/constants/shirt-designs";
+import { SIZES, isValidSize } from "@/constants/shirt-designs";
 import SizeGuideCard from "@/components/SizeGuideCard";
 import type { OrderItem, DBOrderItem, CustomerInfo, ShirtDesign } from "@/types/order";
 import ShirtDesignCard from "@/components/ShirtDesignCard";
@@ -201,6 +201,16 @@ export default function ShirtOrderForm() {
       setError("กรุณาเพิ่มรายการสั่งซื้ออย่างน้อย 1 รายการ");
       return false;
     }
+
+    // Validate shirt sizes
+    for (let i = 0; i < orderItems.length; i++) {
+      const item = orderItems[i];
+      if (!isValidSize(item.size)) {
+        setError(`รายการที่ ${i + 1}: ขนาด "${item.size}" ไม่ถูกต้อง กรุณาเลือกขนาดที่มีให้บริการ`);
+        return false;
+      }
+    }
+
     if (!customerInfo.name.trim()) {
       setError("กรุณากรอกชื่อ-นามสกุล");
       return false;

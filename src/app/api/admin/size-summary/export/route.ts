@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { getComboRelationships } from '@/lib/combo-products'
 import { processSizeSummary, calculateSizeTotals } from '@/lib/size-summary'
+import { ALL_SIZES } from '@/constants/shirt-designs'
 import * as XLSX from 'xlsx'
 import type { DBOrderItem, DBShirtDesign } from '@/types/order'
 
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
     const sizeTotals = calculateSizeTotals(sizeSummary)
 
     // Prepare data for Excel
-    const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL']
+    const sizes = ALL_SIZES as readonly string[]
 
     const excelData = [
       ...sizeSummary,
