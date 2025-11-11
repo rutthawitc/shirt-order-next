@@ -249,10 +249,23 @@ design-4/  → Souvenir (front.jpg, back.jpg)
 ```
 
 ### Admin Features
-- Excel export endpoint: `/api/orders/export`
-- Generates 3 sheets: Orders, Order Items, Size Summary
-- Uses `xlsx` library for generation
-- Toggle order acceptance: `/api/orders/toggle-status` (reads/writes to Redis)
+- **Orders Dashboard**: `/admin` - Main order management interface
+- **Size Summary Page**: `/admin/size-summary` - Live table of shirt quantities by design and size
+  - Shows all shirt sizes (S-6XL) as columns
+  - Automatically splits combo products into component designs
+  - Includes totals row and summary statistics cards
+  - Filter by order status (pending, confirmed, processing, completed, cancelled)
+  - Sort by design name or quantity
+  - Export to Excel functionality
+  - Key files: [src/app/admin/size-summary/page.tsx](src/app/admin/size-summary/page.tsx), [src/components/SizeSummaryClient.tsx](src/components/SizeSummaryClient.tsx), [src/lib/size-summary.ts](src/lib/size-summary.ts)
+- **Excel export endpoint**: `/api/orders/export`
+  - Generates 3 sheets: Orders, Order Items, Size Summary
+  - Uses `xlsx` library for generation
+  - Automatically handles combo product splitting
+- **Size Summary Excel export**: `/api/admin/size-summary/export`
+  - Dedicated endpoint for exporting only the size summary
+  - Accepts status filtering via query parameters (e.g., `?statuses=completed,processing`)
+- **Toggle order acceptance**: `/api/orders/toggle-status` (reads/writes to Redis)
 
 ## Security Considerations
 

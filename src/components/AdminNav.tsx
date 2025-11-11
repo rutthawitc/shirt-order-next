@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Package, ShoppingBag, Layers } from 'lucide-react'
+import { Package, ShoppingBag, Layers, BarChart3 } from 'lucide-react'
 
 export default function AdminNav() {
   const pathname = usePathname()
@@ -12,6 +12,11 @@ export default function AdminNav() {
       href: '/admin',
       label: 'คำสั่งซื้อ',
       icon: ShoppingBag,
+    },
+    {
+      href: '/admin/size-summary',
+      label: 'สรุปขนาดเสื้อ',
+      icon: BarChart3,
     },
     {
       href: '/admin/designs',

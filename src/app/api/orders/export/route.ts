@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { getComboRelationships } from '@/lib/combo-products';
+import { processSizeSummary } from '@/lib/size-summary';
 import * as XLSX from 'xlsx';
 
 export async function GET() {
@@ -66,52 +67,6 @@ export async function GET() {
       'รวม': item.quantity * item.price_per_unit
     }));
 
-    // Process size summary data
-    function processSizeSummary(items: any[]) {
-      const sizeCount = new Map<string, { [key: string]: number }>();
-      const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '6XL'];
-
-      // Initialize the map with all available designs from database
-      if (designs) {
-        designs.forEach(design => {
-          sizeCount.set(design.id, Object.fromEntries(sizes.map(size => [size, 0])));
-        });
-      }
-
-      items.forEach(item => {
-        const design = item.design;
-        const size = item.size;
-        const quantity = item.quantity;
-
-        // Check if this is a combo product (database-driven)
-        const comboComponents = comboMap.get(design);
-
-        if (comboComponents && comboComponents.length > 0) {
-          // This is a combo product - split it into components
-          comboComponents.forEach(comp => {
-            if (sizeCount.has(comp.component) && size) {
-              const designSizes = sizeCount.get(comp.component)!;
-              designSizes[size] = (designSizes[size] || 0) + (quantity * comp.multiplier);
-            }
-          });
-        } else if (sizeCount.has(design) && size) {
-          // Normal processing for non-combo designs
-          const designSizes = sizeCount.get(design)!;
-          designSizes[size] = (designSizes[size] || 0) + quantity;
-        }
-      });
-
-      // Convert to array format for Excel
-      // Filter out combo products - only show their component designs in the summary
-      const sizeSummary = Array.from(sizeCount.entries())
-        .filter(([design]) => !comboMap.has(design)) // Exclude combo products
-        .map(([design, sizeData]) => ({
-          'แบบเสื้อ': designNameMap.get(design) || 'ไม่ระบุ',
-          ...sizeData
-        }));
-
-      return sizeSummary;
-    }
 
     // Create workbook and sheets
     const wb = XLSX.utils.book_new();
@@ -125,7 +80,7 @@ export async function GET() {
     XLSX.utils.book_append_sheet(wb, wsItems, 'รายการสินค้า');
 
     // Add size summary sheet
-    const sizeSummary = processSizeSummary(items);
+    const sizeSummary = processSizeSummary(items, designs, comboMap);
     const wsSizes = XLSX.utils.json_to_sheet(sizeSummary);
     XLSX.utils.book_append_sheet(wb, wsSizes, 'ขนาดเสื้อ');
 
