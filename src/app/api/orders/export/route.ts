@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/app/api/orders/export/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';

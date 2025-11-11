@@ -109,7 +109,7 @@ export default function SizeSummaryTable({ data }: SizeSummaryTableProps) {
 /**
  * Calculate the total for a single row
  */
-function calculateRowTotal(row: SizeSummaryRow, sizes: string[]): number {
+function calculateRowTotal(row: SizeSummaryRow, sizes: readonly string[]): number {
   return sizes.reduce((sum, size) => {
     const value = row[size] as number
     return sum + (typeof value === 'number' ? value : 0)
@@ -119,7 +119,7 @@ function calculateRowTotal(row: SizeSummaryRow, sizes: string[]): number {
 /**
  * Calculate totals for each size across all rows
  */
-function calculateTotals(data: SizeSummaryRow[], sizes: string[]): { [key: string]: number } {
+function calculateTotals(data: SizeSummaryRow[], sizes: readonly string[]): { [key: string]: number } {
   const totals: { [key: string]: number } = {}
 
   sizes.forEach(size => {
