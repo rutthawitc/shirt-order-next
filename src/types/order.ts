@@ -61,6 +61,7 @@ export interface Order {
   address: string;
   is_pickup: boolean;
   total_price: number;
+  shipping_cost: number;
   slip_image: string;
   status: string;
   created_at: string;

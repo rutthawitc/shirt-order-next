@@ -7,6 +7,7 @@ interface NotifyOrderParams {
   name: string;
   phone: string;
   totalAmount: number;
+  shippingCost: number;
   items: Array<{
     design: string;
     size: string;
@@ -106,6 +107,7 @@ export async function sendOrderNotification({
   name,
   phone,
   totalAmount,
+  shippingCost,
   items,
   isPickup,
   address,
@@ -131,15 +133,22 @@ export async function sendOrderNotification({
 
   const testPrefix = env.isTestEnvironment ? '🧪 [ทดสอบ] ' : '';
 
+  // Calculate grand total
+  const grandTotal = totalAmount + shippingCost;
+
   const message = `${testPrefix}🛍 <b>มีการสั่งซื้อใหม่!</b>
 
 📋 <b>รหัสสั่งซื้อ:</b> ${orderId}
 👤 <b>ชื่อผู้สั่ง:</b> ${name}
 📞 <b>เบอร์โทรศัพท์:</b> ${phone}
-💰 <b>ยอดรวม:</b> ${totalAmount.toLocaleString()} บาท
 
 📦 <b>รายการสินค้า:</b>
 ${itemsList}
+
+💰 <b>ยอดเงิน:</b>
+  • ยอดสินค้า: ${totalAmount.toLocaleString()} บาท
+  • ค่าจัดส่ง: ${shippingCost.toLocaleString()} บาท
+  • <b>ยอดรวมทั้งสิ้น: ${grandTotal.toLocaleString()} บาท</b>
 
 🚚 <b>วิธีรับสินค้า:</b> ${isPickup ? 'รับหน้างาน' : 'จัดส่ง'}${!isPickup && address ? `\n📍 <b>ที่อยู่:</b> ${address}` : ''}`;
 

@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     const address = formData.get('address') as string
     const isPickup = formData.get('isPickup') === 'true'
     const totalPrice = parseFloat(formData.get('totalPrice') as string)
+    const shippingCost = parseFloat(formData.get('shippingCost') as string || '0')
     const items = JSON.parse(formData.get('items') as string) as CreateOrderItem[]
     const slipImage = formData.get('slipImage') as File
 
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
       address,
       is_pickup: isPickup,
       total_price: totalPrice,
+      shipping_cost: shippingCost,
       slip_image: uploadResponse.secure_url,
       status: 'pending'
     }
@@ -95,6 +97,7 @@ export async function POST(request: Request) {
       name: order.name,
       phone: order.phone,
       totalAmount: order.total_price,
+      shippingCost: order.shipping_cost,
       items: orderItems,
       isPickup: order.is_pickup,
       address: order.address,

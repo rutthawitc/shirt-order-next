@@ -259,6 +259,7 @@ export default function ShirtOrderForm() {
       formData.append("isPickup", customerInfo.isPickup.toString());
       formData.append("items", JSON.stringify(itemsForSubmission));
       formData.append("totalPrice", calculateTotalPrice().toString());
+      formData.append("shippingCost", (customerInfo.isPickup ? 0 : SHIPPING_COST).toString());
 
       if (customerInfo.slipImage) {
         formData.append("slipImage", customerInfo.slipImage);
